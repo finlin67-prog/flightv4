@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,10 +6,9 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, timezone
-
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,46 +24,534 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# ============================================================================
+# DATA MODELS
+# ============================================================================
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
+class AssessmentQuestion(BaseModel):
+    id: str
+    category: str
+    question: str
+    description: str
+    options: List[Dict[str, any]]
+
+class TechTool(BaseModel):
+    id: str
+    name: str
+    tier: str
+
+class TechCategory(BaseModel):
+    name: str
+    weight: float
+    tools: List[TechTool]
+
+class AssessmentResponse(BaseModel):
+    question_id: str
+    value: int
+
+class AssessmentSubmission(BaseModel):
+    responses: Dict[str, int]
+    tech_tools: List[str]
+    assessment_id: Optional[str] = None
+
+class AssessmentResult(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    assessment_score: float
+    tech_score: float
+    combined_score: float
+    plane_level: Dict[str, str]
+    responses: Dict[str, int]
+    tech_tools: List[str]
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    insights: List[str]
+    recommendations: List[Dict[str, any]]
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+# ============================================================================
+# ASSESSMENT QUESTIONS DATA
+# ============================================================================
 
-# Add your routes to the router instead of directly to app
+ASSESSMENT_QUESTIONS = [
+    {
+        "id": "strategy",
+        "category": "Marketing Strategy",
+        "question": "How mature is your marketing strategy?",
+        "description": "Evaluate your strategic planning, goal-setting, and market positioning.",
+        "options": [
+            {"value": 0, "label": "No formal strategy - reactive marketing"},
+            {"value": 25, "label": "Basic strategy - annual planning with limited data"},
+            {"value": 50, "label": "Defined strategy - quarterly planning with metrics"},
+            {"value": 75, "label": "Advanced strategy - integrated with business goals and competitive analysis"},
+            {"value": 100, "label": "World-class - data-driven, predictive, agile strategic planning"}
+        ]
+    },
+    {
+        "id": "content",
+        "category": "Content Marketing",
+        "question": "How sophisticated is your content operation?",
+        "description": "Assess your content creation, distribution, and measurement capabilities.",
+        "options": [
+            {"value": 0, "label": "Ad-hoc content - no process or calendar"},
+            {"value": 25, "label": "Basic content - simple blog posts and social updates"},
+            {"value": 50, "label": "Structured content - editorial calendar and content types"},
+            {"value": 75, "label": "Advanced content - multi-channel, personalized, performance-tracked"},
+            {"value": 100, "label": "Content excellence - AI-assisted, omnichannel, audience-segmented"}
+        ]
+    },
+    {
+        "id": "demand_gen",
+        "category": "Demand Generation",
+        "question": "How effective is your demand generation?",
+        "description": "Evaluate lead generation, nurturing, and conversion capabilities.",
+        "options": [
+            {"value": 0, "label": "No formal demand gen - sporadic campaigns"},
+            {"value": 25, "label": "Basic campaigns - email blasts and webinars"},
+            {"value": 50, "label": "Multi-channel campaigns - integrated email, ads, content"},
+            {"value": 75, "label": "Advanced demand gen - ABM, lead scoring, nurture tracks"},
+            {"value": 100, "label": "Predictive demand gen - AI-driven targeting and personalization"}
+        ]
+    },
+    {
+        "id": "sales_alignment",
+        "category": "Sales & Marketing Alignment",
+        "question": "How aligned are sales and marketing?",
+        "description": "Measure collaboration, shared goals, and handoff processes.",
+        "options": [
+            {"value": 0, "label": "Misaligned - separate goals and limited communication"},
+            {"value": 25, "label": "Basic alignment - occasional meetings"},
+            {"value": 50, "label": "Defined SLAs - shared definitions and regular sync"},
+            {"value": 75, "label": "Strong alignment - integrated systems and joint planning"},
+            {"value": 100, "label": "Revenue team - unified goals, processes, and accountability"}
+        ]
+    },
+    {
+        "id": "operations",
+        "category": "Marketing Operations",
+        "question": "How mature are your marketing operations?",
+        "description": "Assess process management, automation, and operational efficiency.",
+        "options": [
+            {"value": 0, "label": "No formal operations - manual processes"},
+            {"value": 25, "label": "Basic automation - email sequences"},
+            {"value": 50, "label": "Defined operations - process documentation and workflows"},
+            {"value": 75, "label": "Advanced ops - integrated automation and data governance"},
+            {"value": 100, "label": "World-class ops - AI-driven optimization and predictive workflows"}
+        ]
+    },
+    {
+        "id": "tech_stack",
+        "category": "Technology Stack",
+        "question": "How sophisticated is your marketing technology?",
+        "description": "Evaluate your martech integration and utilization.",
+        "options": [
+            {"value": 0, "label": "Minimal tools - email and basic CRM"},
+            {"value": 25, "label": "Basic stack - MAP, CRM, analytics"},
+            {"value": 50, "label": "Integrated stack - 5-10 tools with some integration"},
+            {"value": 75, "label": "Advanced stack - unified platform with data flows"},
+            {"value": 100, "label": "Best-in-class - fully integrated, AI-enabled martech ecosystem"}
+        ]
+    },
+    {
+        "id": "abm",
+        "category": "Account-Based Marketing",
+        "question": "How developed is your ABM program?",
+        "description": "Measure account targeting, personalization, and orchestration.",
+        "options": [
+            {"value": 0, "label": "No ABM - mass marketing only"},
+            {"value": 25, "label": "ABM aware - identifying target accounts"},
+            {"value": 50, "label": "ABM lite - personalized campaigns for top accounts"},
+            {"value": 75, "label": "Scaled ABM - multi-tier account strategies"},
+            {"value": 100, "label": "ABM excellence - AI-driven orchestration across buying groups"}
+        ]
+    },
+    {
+        "id": "analytics",
+        "category": "Analytics & Insights",
+        "question": "How advanced is your analytics capability?",
+        "description": "Assess measurement, attribution, and data-driven decision making.",
+        "options": [
+            {"value": 0, "label": "Basic metrics - vanity metrics only"},
+            {"value": 25, "label": "Channel metrics - engagement and traffic"},
+            {"value": 50, "label": "Business metrics - leads, pipeline, revenue"},
+            {"value": 75, "label": "Advanced attribution - multi-touch and journey analytics"},
+            {"value": 100, "label": "Predictive analytics - AI-driven insights and forecasting"}
+        ]
+    },
+    {
+        "id": "team",
+        "category": "Team & Skills",
+        "question": "How capable is your marketing team?",
+        "description": "Evaluate team structure, skills, and development.",
+        "options": [
+            {"value": 0, "label": "Generalists only - limited specialized skills"},
+            {"value": 25, "label": "Basic specialization - few dedicated roles"},
+            {"value": 50, "label": "Defined roles - specialists across key functions"},
+            {"value": 75, "label": "Advanced team - centers of excellence and skill development"},
+            {"value": 100, "label": "World-class team - continuous learning and innovation culture"}
+        ]
+    },
+    {
+        "id": "budget",
+        "category": "Budget & Resources",
+        "question": "How strategic is your budget allocation?",
+        "description": "Measure budget planning, optimization, and ROI tracking.",
+        "options": [
+            {"value": 0, "label": "No formal budget - reactive spending"},
+            {"value": 25, "label": "Annual budget - limited flexibility"},
+            {"value": 50, "label": "Quarterly planning - some reallocation"},
+            {"value": 75, "label": "Dynamic budgeting - performance-based allocation"},
+            {"value": 100, "label": "Optimized budgeting - AI-driven, predictive, continuous optimization"}
+        ]
+    }
+]
+
+# ============================================================================
+# TECH STACK DATA
+# ============================================================================
+
+TECH_CATEGORIES = [
+    {
+        "name": "CRM & Customer Data",
+        "weight": 1.0,
+        "tools": [
+            {"id": "salesforce", "name": "Salesforce", "tier": "enterprise"},
+            {"id": "hubspot", "name": "HubSpot", "tier": "mid"},
+            {"id": "pipedrive", "name": "Pipedrive", "tier": "smb"},
+            {"id": "zoho", "name": "Zoho CRM", "tier": "smb"},
+            {"id": "supabase", "name": "Supabase", "tier": "custom"}
+        ]
+    },
+    {
+        "name": "Marketing Automation & Email",
+        "weight": 1.0,
+        "tools": [
+            {"id": "marketo", "name": "Adobe Marketo", "tier": "enterprise"},
+            {"id": "eloqua", "name": "Oracle Eloqua", "tier": "enterprise"},
+            {"id": "pardot", "name": "Salesforce Pardot", "tier": "enterprise"},
+            {"id": "klaviyo", "name": "Klaviyo", "tier": "mid"},
+            {"id": "mailchimp", "name": "Mailchimp", "tier": "smb"}
+        ]
+    },
+    {
+        "name": "Analytics & Business Intelligence",
+        "weight": 1.2,
+        "tools": [
+            {"id": "ga4", "name": "Google Analytics 4", "tier": "foundational"},
+            {"id": "mixpanel", "name": "Mixpanel", "tier": "mid"},
+            {"id": "amplitude", "name": "Amplitude", "tier": "mid"},
+            {"id": "tableau", "name": "Tableau", "tier": "enterprise"},
+            {"id": "looker", "name": "Google Looker", "tier": "enterprise"}
+        ]
+    },
+    {
+        "name": "Content, SEO & Search",
+        "weight": 0.9,
+        "tools": [
+            {"id": "semrush", "name": "Semrush", "tier": "mid"},
+            {"id": "ahrefs", "name": "Ahrefs", "tier": "mid"},
+            {"id": "contentiq", "name": "ContentIQ", "tier": "enterprise"},
+            {"id": "hubspot-cms", "name": "HubSpot CMS", "tier": "mid"},
+            {"id": "wordpress", "name": "WordPress", "tier": "foundational"}
+        ]
+    },
+    {
+        "name": "Advertising & Demand Gen",
+        "weight": 0.9,
+        "tools": [
+            {"id": "google-ads", "name": "Google Ads", "tier": "foundational"},
+            {"id": "meta-ads", "name": "Meta Ads", "tier": "foundational"},
+            {"id": "linkedin-ads", "name": "LinkedIn Ads", "tier": "mid"},
+            {"id": "6sense", "name": "6sense", "tier": "enterprise"},
+            {"id": "the-trade-desk", "name": "The Trade Desk", "tier": "enterprise"}
+        ]
+    },
+    {
+        "name": "Orchestration & Integration",
+        "weight": 1.1,
+        "tools": [
+            {"id": "zapier", "name": "Zapier", "tier": "foundational"},
+            {"id": "make", "name": "Make", "tier": "foundational"},
+            {"id": "segment", "name": "Segment", "tier": "enterprise"},
+            {"id": "mparticle", "name": "mParticle", "tier": "enterprise"},
+            {"id": "iterable", "name": "Iterable", "tier": "mid"}
+        ]
+    }
+]
+
+# ============================================================================
+# SCORING LOGIC
+# ============================================================================
+
+def calculate_assessment_score(responses: Dict[str, int]) -> float:
+    """Calculate assessment score from question responses"""
+    if not responses:
+        return 0.0
+    
+    scores = list(responses.values())
+    return sum(scores) / len(scores)
+
+def calculate_tech_score(selected_tools: List[str]) -> float:
+    """Calculate tech stack score based on selected tools"""
+    if not selected_tools:
+        return 0.0
+    
+    score = 0.0
+    total_weight = 0.0
+    
+    for category in TECH_CATEGORIES:
+        selected_in_category = [
+            tool for tool in category["tools"] 
+            if tool["id"] in selected_tools
+        ]
+        
+        if selected_in_category:
+            category_score = len(selected_in_category) * 1.5
+            
+            for tool in selected_in_category:
+                if tool["tier"] == "enterprise":
+                    category_score += 2
+                elif tool["tier"] == "mid":
+                    category_score += 1.5
+                elif tool["tier"] == "foundational":
+                    category_score += 0.5
+            
+            category_score = min(10, category_score / len(selected_in_category))
+            score += category_score * category["weight"]
+            total_weight += category["weight"]
+    
+    return min(10, score / total_weight) if total_weight > 0 else 0.0
+
+def get_plane_level(assessment_score: float, tech_score: float) -> Dict[str, str]:
+    """Determine plane level based on combined scores"""
+    combined = (assessment_score / 10 + tech_score) / 2
+    
+    if combined < 2:
+        return {
+            "name": "Grounded",
+            "emoji": "✈️",
+            "description": "Foundation building phase"
+        }
+    elif combined < 3:
+        return {
+            "name": "Single Engine",
+            "emoji": "🛩️",
+            "description": "Basic capabilities emerging"
+        }
+    elif combined < 4.5:
+        return {
+            "name": "Regional Jet",
+            "emoji": "✈️",
+            "description": "Growing sophistication"
+        }
+    elif combined < 6:
+        return {
+            "name": "Commercial Jet",
+            "emoji": "🛫",
+            "description": "Advanced readiness"
+        }
+    elif combined < 7.5:
+        return {
+            "name": "Wide-body Jet",
+            "emoji": "✈️",
+            "description": "Enterprise capability"
+        }
+    else:
+        return {
+            "name": "Airbus 380",
+            "emoji": "🛫",
+            "description": "Maximum operational capability"
+        }
+
+def generate_insights(responses: Dict[str, int], tech_tools: List[str]) -> List[str]:
+    """Generate insights based on assessment and tech stack"""
+    insights = []
+    
+    # Assessment insights
+    avg_score = calculate_assessment_score(responses)
+    if avg_score < 30:
+        insights.append("Focus on building foundational marketing capabilities")
+    elif avg_score < 60:
+        insights.append("Time to scale and systematize your marketing operations")
+    else:
+        insights.append("You're ready for advanced optimization and innovation")
+    
+    # Tech stack insights
+    tech_count = len(tech_tools)
+    if tech_count < 5:
+        insights.append("Consider expanding your marketing technology stack")
+    elif tech_count < 15:
+        insights.append("Good tech coverage - focus on integration and utilization")
+    else:
+        insights.append("Comprehensive tech stack - optimize for efficiency")
+    
+    # Category-specific insights
+    weak_categories = []
+    for q in ASSESSMENT_QUESTIONS:
+        if responses.get(q["id"], 0) < 50:
+            weak_categories.append(q["category"])
+    
+    if weak_categories:
+        insights.append(f"Priority improvement areas: {', '.join(weak_categories[:3])}")
+    
+    return insights
+
+def generate_recommendations(responses: Dict[str, int], tech_tools: List[str]) -> List[Dict[str, any]]:
+    """Generate journey recommendations based on assessment"""
+    recommendations = []
+    
+    # Analyze weak areas
+    weak_areas = []
+    for q in ASSESSMENT_QUESTIONS:
+        score = responses.get(q["id"], 0)
+        if score < 50:
+            weak_areas.append({
+                "category": q["category"],
+                "score": score,
+                "id": q["id"]
+            })
+    
+    # Sort by score (weakest first)
+    weak_areas.sort(key=lambda x: x["score"])
+    
+    # Generate journey recommendations
+    journey_map = {
+        "abm": {
+            "title": "ABM → Operations Excellence",
+            "description": "Strategic targeting of high-value accounts with personalized campaigns",
+            "stages": [
+                "Account identification and tiering",
+                "Personalized content and engagement",
+                "Sales-marketing orchestration"
+            ],
+            "timeline": "12-16 weeks",
+            "required_tools": ["salesforce", "6sense", "linkedin-ads"]
+        },
+        "analytics": {
+            "title": "Analytics → Performance Optimization",
+            "description": "Build comprehensive measurement and attribution capabilities",
+            "stages": [
+                "Define metrics and KPIs",
+                "Implement tracking and dashboards",
+                "Advanced attribution modeling"
+            ],
+            "timeline": "10-14 weeks",
+            "required_tools": ["ga4", "mixpanel", "tableau"]
+        },
+        "content": {
+            "title": "Content → Distribution Mastery",
+            "description": "Scale content production and optimize distribution",
+            "stages": [
+                "Content audit and strategy",
+                "Editorial calendar and workflows",
+                "Multi-channel distribution"
+            ],
+            "timeline": "8-12 weeks",
+            "required_tools": ["hubspot-cms", "semrush", "wordpress"]
+        }
+    }
+    
+    for area in weak_areas[:3]:
+        area_id = area["id"]
+        if area_id in journey_map:
+            journey = journey_map[area_id]
+            journey["current_score"] = area["score"]
+            journey["priority"] = "High" if area["score"] < 30 else "Medium"
+            recommendations.append(journey)
+    
+    return recommendations
+
+# ============================================================================
+# API ENDPOINTS
+# ============================================================================
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Flight Deck API - Marketing Assessment Platform"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+@api_router.get("/assessment/questions")
+async def get_assessment_questions():
+    """Get all assessment questions"""
+    return {"questions": ASSESSMENT_QUESTIONS}
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+@api_router.get("/tech/categories")
+async def get_tech_categories():
+    """Get all tech categories and tools"""
+    return {"categories": TECH_CATEGORIES}
+
+@api_router.post("/assessment/submit")
+async def submit_assessment(submission: AssessmentSubmission):
+    """Submit assessment and get results"""
+    try:
+        # Calculate scores
+        assessment_score = calculate_assessment_score(submission.responses)
+        tech_score = calculate_tech_score(submission.tech_tools)
+        combined_score = (assessment_score / 10 + tech_score) / 2
+        
+        # Get plane level
+        plane_level = get_plane_level(assessment_score, tech_score)
+        
+        # Generate insights and recommendations
+        insights = generate_insights(submission.responses, submission.tech_tools)
+        recommendations = generate_recommendations(submission.responses, submission.tech_tools)
+        
+        # Create result object
+        result = AssessmentResult(
+            id=submission.assessment_id or str(uuid.uuid4()),
+            assessment_score=assessment_score,
+            tech_score=tech_score,
+            combined_score=combined_score,
+            plane_level=plane_level,
+            responses=submission.responses,
+            tech_tools=submission.tech_tools,
+            insights=insights,
+            recommendations=recommendations
+        )
+        
+        # Save to database
+        result_dict = result.model_dump()
+        result_dict['created_at'] = result_dict['created_at'].isoformat()
+        
+        await db.assessments.update_one(
+            {"id": result.id},
+            {"$set": result_dict},
+            upsert=True
+        )
+        
+        return result
+        
+    except Exception as e:
+        logging.error(f"Error submitting assessment: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/assessment/results/{assessment_id}")
+async def get_assessment_results(assessment_id: str):
+    """Get assessment results by ID"""
+    result = await db.assessments.find_one({"id": assessment_id}, {"_id": 0})
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    if not result:
+        raise HTTPException(status_code=404, detail="Assessment not found")
     
-    return status_checks
+    return result
+
+@api_router.get("/assessment/history")
+async def get_assessment_history():
+    """Get all assessments (last 50)"""
+    assessments = await db.assessments.find(
+        {}, 
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    return {"assessments": assessments}
+
+@api_router.delete("/assessment/{assessment_id}")
+async def delete_assessment(assessment_id: str):
+    """Delete an assessment"""
+    result = await db.assessments.delete_one({"id": assessment_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+    
+    return {"message": "Assessment deleted successfully"}
 
 # Include the router in the main app
 app.include_router(api_router)
