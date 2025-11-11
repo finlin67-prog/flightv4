@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import ReactMapGL, { Marker } from 'react-map-gl';
+import Map, { Marker } from 'react-map-gl/mapbox';
 import { Home, Plane, TrendingUp, Target, Zap, Users } from 'lucide-react';
 import axios from 'axios';
 import { MARKETING_CITIES, getCityById } from '../data/citiesData';
