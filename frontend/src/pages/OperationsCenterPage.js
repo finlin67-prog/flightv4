@@ -15,11 +15,36 @@ const OperationsCenterPage = () => {
   const [results, setResults] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showConnections, setShowConnections] = useState(true);
   const [viewState, setViewState] = useState({
     longitude: 10,
     latitude: 20,
     zoom: 1.5
   });
+
+  // Get recommended journey connections
+  const getJourneyConnections = () => {
+    if (!results || !results.recommendations) return [];
+    
+    const connections = [];
+    // Create connections based on recommendations - connecting weak areas to strong areas
+    const strongCities = MARKETING_CITIES.filter(c => getCityHeat(c.id) >= 75);
+    const weakCities = MARKETING_CITIES.filter(c => getCityHeat(c.id) < 50);
+    
+    // Connect each weak city to nearest strong city
+    weakCities.forEach(weak => {
+      if (strongCities.length > 0) {
+        const nearest = strongCities[0]; // Could calculate actual nearest
+        connections.push({
+          from: weak,
+          to: nearest,
+          type: 'improvement'
+        });
+      }
+    });
+    
+    return connections.slice(0, 5); // Show top 5 connections
+  };
 
   useEffect(() => {
     if (assessmentId) {
