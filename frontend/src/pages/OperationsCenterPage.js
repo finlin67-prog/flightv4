@@ -168,6 +168,23 @@ const OperationsCenterPage = () => {
               </div>
             </div>
 
+            {/* Map Controls */}
+            <div className="bg-slate-800/50 border border-blue-500/30 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-blue-300">Show Connections</span>
+                <button
+                  onClick={() => setShowConnections(!showConnections)}
+                  className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+                    showConnections 
+                      ? 'bg-cyan-600 text-white' 
+                      : 'bg-slate-700 text-blue-300'
+                  }`}
+                >
+                  {showConnections ? 'ON' : 'OFF'}
+                </button>
+              </div>
+            </div>
+
             {/* City Legend */}
             <div>
               <h3 className="text-sm font-semibold text-white mb-3 uppercase">City Heat Legend</h3>
