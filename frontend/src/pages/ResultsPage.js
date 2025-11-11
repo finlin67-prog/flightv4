@@ -236,7 +236,13 @@ const ResultsPage = () => {
           <p className="text-blue-200 mb-6 max-w-2xl mx-auto">
             Review your transformation journeys and start implementing the highest priority recommendations.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
+            <Link to={`/operations-center/${assessmentId}`}>
+              <button className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:shadow-cyan-500/50">
+                🌍 Operations Center
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
             <Link to={`/scenario/${assessmentId}`}>
               <button className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:shadow-cyan-500/50">
                 🎛️ What-If Simulator
