@@ -17,8 +17,8 @@ const OperationsCenterPage = () => {
   const [loading, setLoading] = useState(true);
   const [viewState, setViewState] = useState({
     longitude: 10,
-    latitude: 30,
-    zoom: 1.8
+    latitude: 20,
+    zoom: 1.5
   });
 
   useEffect(() => {
