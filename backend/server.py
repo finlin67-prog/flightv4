@@ -411,36 +411,56 @@ def get_plane_level(assessment_score: float, tech_score: float) -> Dict[str, str
             "description": "Maximum operational capability"
         }
 
-def generate_insights(responses: Dict[str, int], tech_tools: List[str]) -> List[str]:
-    """Generate insights based on assessment and tech stack"""
+def generate_insights(responses: Dict[str, int], tech_tools: List[str], reao_scores: Dict[str, float]) -> List[str]:
+    """Generate insights based on assessment, tech stack, and R/E/A/O scores"""
     insights = []
     
-    # Assessment insights
-    avg_score = calculate_assessment_score(responses)
-    if avg_score < 30:
-        insights.append("Focus on building foundational marketing capabilities")
-    elif avg_score < 60:
-        insights.append("Time to scale and systematize your marketing operations")
+    # R/E/A/O specific insights
+    r = reao_scores.get("readiness", 0)
+    e = reao_scores.get("efficiency", 0)
+    a = reao_scores.get("alignment", 0)
+    o = reao_scores.get("opportunity", 0)
+    
+    # Readiness insights
+    if r < 50:
+        insights.append("🎯 Readiness: Build foundational capabilities and team skills before scaling")
+    elif r < 75:
+        insights.append("🎯 Readiness: Strong foundation - ready to scale operations")
     else:
-        insights.append("You're ready for advanced optimization and innovation")
+        insights.append("🎯 Readiness: Excellent preparedness for advanced initiatives")
     
-    # Tech stack insights
-    tech_count = len(tech_tools)
-    if tech_count < 5:
-        insights.append("Consider expanding your marketing technology stack")
-    elif tech_count < 15:
-        insights.append("Good tech coverage - focus on integration and utilization")
+    # Efficiency insights
+    if e < 50:
+        insights.append("⚡ Efficiency: Automate repetitive tasks and improve process workflows")
+    elif e < 75:
+        insights.append("⚡ Efficiency: Good operational rhythm - optimize key bottlenecks")
     else:
-        insights.append("Comprehensive tech stack - optimize for efficiency")
+        insights.append("⚡ Efficiency: Highly optimized operations - focus on innovation")
     
-    # Category-specific insights
-    weak_categories = []
-    for q in ASSESSMENT_QUESTIONS:
-        if responses.get(q["id"], 0) < 50:
-            weak_categories.append(q["category"])
+    # Alignment insights
+    if a < 50:
+        insights.append("🎯 Alignment: Strengthen cross-functional collaboration and shared goals")
+    elif a < 75:
+        insights.append("🎯 Alignment: Good coordination - deepen strategic integration")
+    else:
+        insights.append("🎯 Alignment: Exceptional team sync and strategic cohesion")
     
-    if weak_categories:
-        insights.append(f"Priority improvement areas: {', '.join(weak_categories[:3])}")
+    # Opportunity insights
+    if o < 50:
+        insights.append("🚀 Opportunity: Focus on quick wins before pursuing aggressive growth")
+    elif o < 75:
+        insights.append("🚀 Opportunity: Strong position - expand into adjacent channels")
+    else:
+        insights.append("🚀 Opportunity: Prime position for market leadership initiatives")
+    
+    # Overall strategic guidance
+    avg_reao = (r + e + a + o) / 4
+    if avg_reao < 50:
+        insights.append("📊 Strategic Priority: Build foundations before scaling")
+    elif avg_reao < 75:
+        insights.append("📊 Strategic Priority: Scale proven channels and systematize")
+    else:
+        insights.append("📊 Strategic Priority: Lead with innovation and market expansion")
     
     return insights
 
