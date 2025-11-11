@@ -268,7 +268,7 @@ const OperationsCenterPage = () => {
                 </Marker>
               );
             })}
-          </Map>
+          </ReactMapGL>
         </div>
 
         {/* Right Panel - AI Insights */}
