@@ -395,7 +395,7 @@ def generate_insights(responses: Dict[str, int], tech_tools: List[str]) -> List[
     
     return insights
 
-def generate_recommendations(responses: Dict[str, int], tech_tools: List[str]) -> List[Dict[str, any]]:
+def generate_recommendations(responses: Dict[str, int], tech_tools: List[str]) -> List[Dict[str, Any]]:
     """Generate journey recommendations based on assessment"""
     recommendations = []
     
