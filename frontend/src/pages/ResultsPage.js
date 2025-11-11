@@ -237,6 +237,12 @@ const ResultsPage = () => {
             Review your transformation journeys and start implementing the highest priority recommendations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to={`/scenario/${assessmentId}`}>
+              <button className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:shadow-cyan-500/50">
+                🎛️ What-If Simulator
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
             <Link to="/assessment">
               <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center gap-2">
                 Take Another Assessment
