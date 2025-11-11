@@ -215,7 +215,7 @@ const OperationsCenterPage = () => {
 
         {/* Center Panel - Map */}
         <div className="flex-1 relative">
-          <Map
+          <ReactMapGL
             {...viewState}
             onMove={evt => setViewState(evt.viewState)}
             mapStyle="mapbox://styles/mapbox/dark-v11"
