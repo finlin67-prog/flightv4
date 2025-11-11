@@ -97,6 +97,36 @@ const ResultsPage = () => {
           </div>
         </div>
 
+        {/* R/E/A/O Dashboard */}
+        {reao_scores && (
+          <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 border-2 border-cyan-500/30 rounded-lg p-8 mb-8">
+            <h3 className="text-2xl font-bold text-white mb-6 text-center">4-Dimension Readiness Assessment</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {[
+                { key: 'readiness', label: 'Readiness', icon: '🎯', color: 'blue' },
+                { key: 'efficiency', label: 'Efficiency', icon: '⚡', color: 'cyan' },
+                { key: 'alignment', label: 'Alignment', icon: '🎯', color: 'blue' },
+                { key: 'opportunity', label: 'Opportunity', icon: '🚀', color: 'cyan' }
+              ].map((dim) => (
+                <div key={dim.key} className="bg-slate-900/50 rounded-lg p-6 text-center">
+                  <div className="text-4xl mb-3">{dim.icon}</div>
+                  <h4 className="text-sm font-semibold text-blue-300 mb-2 uppercase">{dim.label}</h4>
+                  <p className="text-3xl font-bold text-cyan-400 mb-3">{reao_scores[dim.key]?.toFixed(0) || 0}</p>
+                  <div className="w-full bg-slate-800/50 rounded h-2">
+                    <div
+                      className={`bg-${dim.color}-500 h-2 rounded transition-all`}
+                      style={{ width: `${reao_scores[dim.key] || 0}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-blue-400 mt-2">
+                    {reao_scores[dim.key] >= 75 ? 'Excellent' : reao_scores[dim.key] >= 50 ? 'Good' : 'Needs Focus'}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Score Breakdown */}
           <div className="bg-slate-900/50 border border-blue-900/30 rounded-lg p-8">
