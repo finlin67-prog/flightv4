@@ -5,6 +5,7 @@ import AssessmentPage from './pages/AssessmentPage';
 import TechStackPage from './pages/TechStackPage';
 import ResultsPage from './pages/ResultsPage';
 import HistoryPage from './pages/HistoryPage';
+import ScenarioPage from './pages/ScenarioPage';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/assessment" element={<AssessmentPage />} />
           <Route path="/tech-stack" element={<TechStackPage />} />
           <Route path="/results/:assessmentId" element={<ResultsPage />} />
+          <Route path="/scenario/:assessmentId" element={<ScenarioPage />} />
           <Route path="/history" element={<HistoryPage />} />
         </Routes>
       </div>
