@@ -251,6 +251,38 @@ const OperationsCenterPage = () => {
             minZoom={1}
             maxZoom={8}
           >
+            {/* Flight Path Lines */}
+            {showConnections && getJourneyConnections().map((connection, idx) => (
+              <svg
+                key={idx}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  pointerEvents: 'none'
+                }}
+              >
+                <defs>
+                  <linearGradient id={`gradient-${idx}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{ stopColor: '#ef4444', stopOpacity: 0.6 }} />
+                    <stop offset="100%" style={{ stopColor: '#10b981', stopOpacity: 0.6 }} />
+                  </linearGradient>
+                </defs>
+                <line
+                  x1={`${((connection.from.coordinates[0] + 180) / 360) * 100}%`}
+                  y1={`${((90 - connection.from.coordinates[1]) / 180) * 100}%`}
+                  x2={`${((connection.to.coordinates[0] + 180) / 360) * 100}%`}
+                  y2={`${((90 - connection.to.coordinates[1]) / 180) * 100}%`}
+                  stroke={`url(#gradient-${idx})`}
+                  strokeWidth="2"
+                  strokeDasharray="5,5"
+                  opacity="0.5"
+                />
+              </svg>
+            ))}
+
             {/* City Markers */}
             {MARKETING_CITIES.map((city) => {
               const heat = getCityHeat(city.id);
