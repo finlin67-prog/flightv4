@@ -626,6 +626,74 @@ async def delete_assessment(assessment_id: str):
     
     return {"message": "Assessment deleted successfully"}
 
+@api_router.post("/scenarios/estimate")
+async def estimate_scenario(assessment_id: str, scenario: ScenarioEstimate):
+    """
+    Estimate impact of resource changes on scores
+    What-if simulator for budget, headcount, tech, and process changes
+    """
+    try:
+        # Get base assessment
+        base = await db.assessments.find_one({"id": assessment_id}, {"_id": 0})
+        if not base:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+        
+        # Get base R/E/A/O scores
+        base_reao = base.get("reao_scores", {})
+        
+        # Calculate adjusted scores based on scenario
+        adjusted_reao = {}
+        
+        # Budget impact (affects Efficiency and Opportunity)
+        budget_impact = scenario.budget_pct / 100
+        adjusted_reao["efficiency"] = min(100, max(0, base_reao.get("efficiency", 0) + budget_impact * 8))
+        adjusted_reao["opportunity"] = min(100, max(0, base_reao.get("opportunity", 0) + budget_impact * 6))
+        
+        # Headcount impact (affects Readiness and Alignment)
+        headcount_impact = scenario.headcount * 3
+        adjusted_reao["readiness"] = min(100, max(0, base_reao.get("readiness", 0) + headcount_impact * 0.5))
+        adjusted_reao["alignment"] = min(100, max(0, base_reao.get("alignment", 0) + headcount_impact * 0.3))
+        
+        # Tech utilization impact (affects Efficiency)
+        tech_impact = scenario.tech_utilization_pct / 100
+        adjusted_reao["efficiency"] = min(100, max(0, adjusted_reao["efficiency"] + tech_impact * 10))
+        
+        # Process maturity impact (affects Alignment and Readiness)
+        process_impact = scenario.process_maturity_pct / 100
+        adjusted_reao["alignment"] = min(100, max(0, adjusted_reao["alignment"] + process_impact * 9))
+        adjusted_reao["readiness"] = min(100, max(0, adjusted_reao["readiness"] + process_impact * 5))
+        
+        # Calculate new combined score
+        avg_adjusted = sum(adjusted_reao.values()) / 4
+        new_assessment_score = avg_adjusted
+        new_tech_score = base.get("tech_score", 0)
+        new_combined = (new_assessment_score / 10 + new_tech_score) / 2
+        
+        # Get new plane level
+        new_plane = get_plane_level(new_assessment_score, new_tech_score)
+        
+        # Generate scenario insights
+        scenario_insights = []
+        for dimension, new_val in adjusted_reao.items():
+            old_val = base_reao.get(dimension, 0)
+            delta = new_val - old_val
+            if abs(delta) > 2:
+                direction = "↑" if delta > 0 else "↓"
+                scenario_insights.append(f"{dimension.title()}: {direction} {abs(delta):.1f} points")
+        
+        return {
+            "base_scores": base_reao,
+            "adjusted_scores": adjusted_reao,
+            "new_combined_score": new_combined,
+            "new_plane_level": new_plane,
+            "delta_insights": scenario_insights,
+            "scenario_applied": scenario.model_dump()
+        }
+        
+    except Exception as e:
+        logging.error(f"Error estimating scenario: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Include the router in the main app
 app.include_router(api_router)
 
