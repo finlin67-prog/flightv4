@@ -67,6 +67,13 @@ class AssessmentResult(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     insights: List[str]
     recommendations: List[Dict[str, Any]]
+    reao_scores: Dict[str, float] = Field(default_factory=dict)
+
+class ScenarioEstimate(BaseModel):
+    budget_pct: float = 0  # -50 to +50
+    headcount: int = 0  # -10 to +10
+    tech_utilization_pct: float = 0  # -30 to +30
+    process_maturity_pct: float = 0  # -20 to +20
 
 # ============================================================================
 # ASSESSMENT QUESTIONS DATA
