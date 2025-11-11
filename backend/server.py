@@ -279,8 +279,50 @@ TECH_CATEGORIES = [
 ]
 
 # ============================================================================
-# SCORING LOGIC
+# SCORING LOGIC - 4 DIMENSIONS (R/E/A/O)
 # ============================================================================
+
+def calculate_reao_scores(responses: Dict[str, int], tech_tools: List[str]) -> Dict[str, float]:
+    """
+    Calculate 4-dimension scores: Readiness, Efficiency, Alignment, Opportunity
+    """
+    if not responses:
+        return {"readiness": 0, "efficiency": 0, "alignment": 0, "opportunity": 0}
+    
+    # Map questions to dimensions
+    dimension_mapping = {
+        "strategy": ["readiness", "alignment"],
+        "content": ["efficiency", "readiness"],
+        "demand_gen": ["readiness", "opportunity"],
+        "sales_alignment": ["alignment", "efficiency"],
+        "operations": ["efficiency", "alignment"],
+        "tech_stack": ["efficiency", "readiness"],
+        "abm": ["opportunity", "readiness"],
+        "analytics": ["efficiency", "opportunity"],
+        "team": ["readiness", "alignment"],
+        "budget": ["alignment", "opportunity"]
+    }
+    
+    # Calculate dimension scores
+    dimension_scores = {"readiness": [], "efficiency": [], "alignment": [], "opportunity": []}
+    
+    for q_id, score in responses.items():
+        if q_id in dimension_mapping:
+            for dimension in dimension_mapping[q_id]:
+                dimension_scores[dimension].append(score)
+    
+    # Average scores per dimension
+    reao = {}
+    for dimension, scores in dimension_scores.items():
+        reao[dimension] = sum(scores) / len(scores) if scores else 0
+    
+    # Tech stack bonus (adds to efficiency and readiness)
+    tech_count = len(tech_tools)
+    tech_bonus = min(10, tech_count * 0.8)  # Up to 10 points bonus
+    reao["efficiency"] = min(100, reao["efficiency"] + tech_bonus * 0.6)
+    reao["readiness"] = min(100, reao["readiness"] + tech_bonus * 0.4)
+    
+    return reao
 
 def calculate_assessment_score(responses: Dict[str, int]) -> float:
     """Calculate assessment score from question responses"""
