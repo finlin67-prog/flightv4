@@ -6,7 +6,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
 
@@ -33,7 +33,7 @@ class AssessmentQuestion(BaseModel):
     category: str
     question: str
     description: str
-    options: List[Dict[str, any]]
+    options: List[Dict[str, Any]]
 
 class TechTool(BaseModel):
     id: str
