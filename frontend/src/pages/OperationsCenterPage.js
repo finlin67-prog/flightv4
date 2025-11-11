@@ -221,6 +221,10 @@ const OperationsCenterPage = () => {
             mapStyle="mapbox://styles/mapbox/dark-v11"
             mapboxAccessToken={MAPBOX_TOKEN}
             style={{ width: '100%', height: '100%' }}
+            projection="mercator"
+            maxPitch={0}
+            minZoom={1}
+            maxZoom={8}
           >
             {/* City Markers */}
             {MARKETING_CITIES.map((city) => {
