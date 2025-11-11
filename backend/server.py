@@ -66,7 +66,7 @@ class AssessmentResult(BaseModel):
     tech_tools: List[str]
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     insights: List[str]
-    recommendations: List[Dict[str, any]]
+    recommendations: List[Dict[str, Any]]
 
 # ============================================================================
 # ASSESSMENT QUESTIONS DATA
