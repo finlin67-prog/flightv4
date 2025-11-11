@@ -536,11 +536,14 @@ async def submit_assessment(submission: AssessmentSubmission):
         tech_score = calculate_tech_score(submission.tech_tools)
         combined_score = (assessment_score / 10 + tech_score) / 2
         
+        # Calculate R/E/A/O scores
+        reao_scores = calculate_reao_scores(submission.responses, submission.tech_tools)
+        
         # Get plane level
         plane_level = get_plane_level(assessment_score, tech_score)
         
         # Generate insights and recommendations
-        insights = generate_insights(submission.responses, submission.tech_tools)
+        insights = generate_insights(submission.responses, submission.tech_tools, reao_scores)
         recommendations = generate_recommendations(submission.responses, submission.tech_tools)
         
         # Create result object
@@ -553,7 +556,8 @@ async def submit_assessment(submission: AssessmentSubmission):
             responses=submission.responses,
             tech_tools=submission.tech_tools,
             insights=insights,
-            recommendations=recommendations
+            recommendations=recommendations,
+            reao_scores=reao_scores
         )
         
         # Save to database
