@@ -40,11 +40,22 @@ Flight Deck is a comprehensive marketing assessment platform that helps business
 
 ## Environment Setup
 
-### Required Environment Variables
+### Required Secrets (via Replit Secrets Manager)
+**IMPORTANT**: For security, set these as Replit Secrets, not in .env files:
+
+- `MONGO_URL`: MongoDB connection string (e.g., mongodb+srv://username:password@cluster.mongodb.net/)
+- `DB_NAME`: Database name (e.g., flightv4)
+
+**To set Replit Secrets:**
+1. Open the "Secrets" tab in the left sidebar
+2. Click "New Secret"
+3. Add each secret with its value
+4. Secrets are automatically available as environment variables
+
+### Local Environment Variables
 
 **Backend** (`backend/.env`):
-- `MONGO_URL`: MongoDB connection string
-- `DB_NAME`: Database name
+- References secrets via `${MONGO_URL}` and `${DB_NAME}`
 - `CORS_ORIGINS`: Allowed CORS origins (default: `*`)
 
 **Frontend** (`frontend/.env`):
@@ -54,8 +65,8 @@ Flight Deck is a comprehensive marketing assessment platform that helps business
 ## Development Setup
 
 ### Current Configuration
-- **Frontend**: Runs on port 5000 (0.0.0.0) - publicly accessible
-- **Backend**: Runs on port 8000 (127.0.0.1) - internal only
+- **Frontend**: Runs on port 5000 (0.0.0.0) - publicly accessible via Replit proxy
+- **Backend**: Runs on port 8000 (0.0.0.0) - accessible via Replit domain
 - **Database**: MongoDB Atlas (external)
 
 ### Running the Application
@@ -69,7 +80,7 @@ cd frontend && npm start
 **Backend** (manual start):
 To start the backend server manually:
 ```bash
-cd backend && python -m uvicorn server:app --host 127.0.0.1 --port 8000 --reload
+cd backend && python -m uvicorn server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Or use the provided script:
@@ -130,16 +141,17 @@ The application is configured for Replit autoscale deployment:
 - **2025-11-12**: Initial Replit setup completed
   - Fixed React/date-fns version compatibility issues
   - Configured CRACO dev server for Replit proxy (allowedHosts: all)
-  - Set up frontend on port 5000, backend on port 8000
-  - Created environment configuration files
+  - Set up frontend on port 5000 (0.0.0.0), backend on port 8000 (0.0.0.0)
+  - Created environment configuration files with secrets placeholder
   - Configured deployment settings for autoscale
+  - **Security**: Removed hardcoded MongoDB credentials - must use Replit Secrets
 
 ## Development Notes
 
 ### Replit-Specific Configuration
 - Frontend dev server configured with `allowedHosts: 'all'` to work with Replit's iframe proxy
 - Frontend binds to `0.0.0.0:5000` for external access
-- Backend binds to `127.0.0.1:8000` for internal access only
+- Backend binds to `0.0.0.0:8000` for access via Replit domain
 - Backend URL uses full Replit domain for CORS
 
 ### Known Issues
