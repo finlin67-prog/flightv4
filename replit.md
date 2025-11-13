@@ -138,6 +138,12 @@ The application is configured for Replit autoscale deployment:
 - Frontend is served from the build directory on port 5000
 
 ## Recent Changes
+- **2025-11-13**: Added "Choose Your Adventure" onboarding flow
+  - Created UserProfileContext for global state management
+  - Redesigned WelcomePage with 3-step onboarding (Role, Objectives, Organization)
+  - Added flight/travel themed copy and UI elements
+  - User profile data now persists across the app for personalization
+  
 - **2025-11-12**: Initial Replit setup completed
   - Fixed React/date-fns version compatibility issues
   - Configured CRACO dev server for Replit proxy (allowedHosts: all)
