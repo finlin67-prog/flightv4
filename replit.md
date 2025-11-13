@@ -12,7 +12,7 @@ Flight Deck is a comprehensive marketing assessment platform designed to help bu
 The platform utilizes a strong flight-themed metaphor throughout its UI, including "Flight Miles," "Current Aircraft" levels (Grounded, Single Engine, Regional Jet, Commercial Jet, Wide-Body Jet), "Flight Instrument Panel," and "Flight Crew Insights." Navigation uses flight-themed labels like "Control Tower (Home)," "Assessments," and "Flight Deck." The design incorporates `shadcn/ui` components built on Radix UI, styled with Tailwind CSS, ensuring a modern and responsive user experience. Interactive elements like sliders for scenario planning and progress indicators for guided walkthroughs are central to the user interface.
 
 ### Technical Implementations
-- **Quick Marketing Assessment**: A 10-question assessment across key marketing capabilities with a 5-option scale (0-100), leading to R/E/A/O dimensional analysis.
+- **Quick Marketing Assessment**: A 10-question assessment across key marketing capabilities with a 5-option scale (0-100), leading to R/E/A/O dimensional analysis. Features live journey suggestions that update in real-time as users answer questions.
 - **Deep Dive Assessments**: Topic-specific assessments with 5 detailed questions per topic for in-depth evaluation of 10 marketing functions.
 - **Tech Stack Evaluation**: Categorization and selection of tools across 6 major categories with weighted scoring based on enterprise vs. SMB tools.
 - **Results & Insights**: Displays "Flight Miles" (combined score 0-100), "Current Aircraft" level, "Flight Instrument Panel" (REAO scores), "Flight Crew Insights," and a "What Now?" section with personalized journeys.

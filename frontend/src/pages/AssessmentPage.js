@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight, CheckCircle, Plane, Send, Compass, Activity 
 import axios from 'axios';
 import { useFlightStatus } from '../context/FlightStatusContext';
 import { calculateAverageScore, calculateLiveCombinedScore, getPlaneLevel, toFlightMiles } from '../utils/flightMetrics';
+import { getLiveJourneySuggestions, toPoints } from '../data/journeys';
+import LiveJourneySuggestions from '../components/LiveJourneySuggestions';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -138,6 +140,10 @@ const AssessmentPage = () => {
   const plane = getPlaneLevel(combinedScore);
   const flightMiles = toFlightMiles(combinedScore);
   const progressPercent = (answeredCount / totalQuestions) * 100;
+
+  // Get live journey suggestions
+  const livePoints = toPoints(combinedScore);
+  const suggestedJourneys = getLiveJourneySuggestions(livePoints, 3);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
@@ -372,6 +378,18 @@ const AssessmentPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Live Journey Suggestions Section */}
+        {answeredCount > 0 && (
+          <div className="mt-12 pt-12 border-t border-blue-900/30">
+            <LiveJourneySuggestions
+              suggestedJourneys={suggestedJourneys}
+              currentPoints={livePoints}
+              answeredCount={answeredCount}
+              totalQuestions={totalQuestions}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

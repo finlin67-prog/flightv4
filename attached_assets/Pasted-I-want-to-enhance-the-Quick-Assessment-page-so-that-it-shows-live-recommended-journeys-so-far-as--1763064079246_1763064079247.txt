@@ -1,0 +1,98 @@
+I want to enhance the Quick Assessment page so that it shows “live recommended journeys so far…” as the user answers questions.
+
+Context:
+- I already have:
+  - A Quick Assessment page inside the CockpitLayout.
+  - A journeys data model in something like `src/data/journeys.js` which exports:
+    - `journeys` (array of journey configs)
+    - `toPoints(combinedScore)` helper
+  - A Flight Deck / Journeys page that displays journeys more fully.
+  - A new live flight status mechanism from the previous change (Quick Assessment now computes a `liveAssessmentScore`, `liveCombinedScore`, etc., and may expose them through a context or state).
+
+Goal:
+- While the user is on the Quick Assessment page and answering questions:
+  - Compute a live points value from the partial answers.
+  - Use that to suggest 2–4 journeys from the `journeys` catalog.
+  - Update this list in real time as answers change.
+  - Display this list in a section below the questions, titled something like:
+    - “Based on your answers so far, here are possible journeys:”
+  - Allow the user to click a journey card to go to the main Flight Deck / Journeys page (optionally with that journey preselected).
+
+Please do the following:
+
+1) Import journeys data into Quick Assessment
+   - In the Quick Assessment page component (the same one we used to add live scoring), import:
+     - `journeys` and `toPoints` from `src/data/journeys` (or the correct path).
+   - Also import any helper that converts combined score to a plane/points if we created one (e.g., from `flightMetrics`).
+
+2) Compute live points for recommendations
+   - Use the existing live combined score (from previous work) if available. If not, compute it here as:
+     - `liveCombinedScore = liveAssessmentScore / 10` (0–10).
+   - Then derive points:
+     - `const livePoints = toPoints(liveCombinedScore);`
+   - If no answers are selected yet, `livePoints` can be 0 and we can either show nothing or a friendly message.
+
+3) Define a simple recommendation logic
+   - Create a small helper function inside the Quick Assessment component or a separate file, e.g. `getLiveJourneySuggestions(journeys, livePoints, maxCount = 3)`.
+   - For now, use a *simple heuristic*:
+     - Filter `journeys` where `journey.minPoints` is:
+       - `<= livePoints + 100` (so we show things that are reachable soon).
+     - Optionally sort by:
+       - `journey.minPoints` ascending, so nearer journeys appear first.
+   - From this filtered list, take the top 3–4 journeys as the “live suggestions”.
+   - If `livePoints` is 0, either:
+     - Show a placeholder text like “Answer a few questions to see suggested journeys,” or
+     - Don’t show journey cards yet.
+
+   - It’s okay if we ignore the full `recommendedDimensions` and `requiredTools` for now; we can add more sophisticated filtering later. Right now we want a simple, intuitive mapping based on the emerging score.
+
+4) Add a “Live Journey Suggestions” section to the Quick Assessment UI
+   - In the Quick Assessment page layout, below the main question content (and above any final footer), add a new section component or JSX block.
+   - It should include:
+     - A title: “Based on your answers so far…”
+     - Subtext: “These journeys may be a good fit. You’ll see more precise recommendations once you complete the assessment.”
+   - For each suggested journey:
+     - Render a card with:
+       - Journey title (e.g., “From Spray & Pray to Targeted ABM”).
+       - Short summary (from `journey.summary`).
+       - Origin → Destination line (e.g., “Demand Gen → ABM” or “Seattle → Chicago” if present).
+       - A small pill showing required points, e.g., “Recommended starting at 350+ miles”.
+       - Optional text: “Requires: CRM, MAP, analytics…” based on `journey.requiredTools`.
+   - Keep the design consistent with the existing cards on the Flight Deck page (buttons, colors, etc.), but this can be a slightly simpler version since it’s a preview.
+
+5) Live update behavior
+   - Ensure that whenever the user selects or changes an answer:
+     - Live score updates (as implemented in the previous prompt).
+     - `livePoints` recomputes.
+     - The list of suggested journeys recomputes.
+   - The UI should feel responsive, like a pilot seeing their potential destinations become available as the aircraft gains range.
+
+6) Click behavior for each suggested journey
+   - When a user clicks on a journey card (or a “View this journey” button on the card):
+     - Navigate them to the main Flight Deck / Journeys page (whatever route you use for that, e.g. `/app/journeys` or `/flight-deck`).
+   - If reasonable, also:
+     - Pass along the selected journey id, either via:
+       - React Router state, e.g. `navigate("/app/journeys", { state: { selectedJourneyId: journey.id }})`, or
+       - A query parameter, e.g. `/app/journeys?selected=journey.id`, or
+       - A shared context.
+     - On the Flight Deck page, if it sees `selectedJourneyId`, it can:
+       - Scroll to or highlight that journey,
+       - Or open a detail view for that journey.
+   - If wiring the selection is too complex right now, at minimum just navigate to the Flight Deck and we can wire the “preselected journey” behavior later.
+
+7) Don’t disturb existing backend logic
+   - The actual official set of recommended journeys after full assessment completion should remain based on the backend-calculated results, the tech stack, etc.
+   - This new “Live suggestions so far” section is simply a **preview** during Quick Assessment to make the experience more engaging.
+
+8) Clean and reusable code
+   - If the Live Journey Suggestions section becomes bigger, consider factoring it out into a reusable component, e.g.:
+     - `src/components/LiveJourneySuggestions.jsx`
+     - Props might include `points`, `journeys`, `onSelectJourney`.
+   - This could later be used in other parts of the app if needed.
+
+Important constraints:
+- Do NOT delete or radically rewrite the Quick Assessment or Flight Deck pages.
+- Do NOT change the backend APIs.
+- Only ADD the live suggestion logic and the new UI section on the Quick Assessment page.
+- Keep the layout within the existing CockpitLayout.
+- Show me which files you changed and where the new suggestion helper or component lives.
