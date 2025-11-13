@@ -32,8 +32,8 @@ const FlightInstrumentsPanel = () => {
   };
 
   return (
-    <aside className="w-80 bg-slate-900/50 border-l border-blue-900/30 overflow-y-auto">
-      <div className="p-6 space-y-6">
+    <aside className="w-80 bg-slate-900/50 border-l border-blue-900/30 overflow-y-auto flex-shrink-0">
+      <div className="p-5 space-y-5">
         {/* Header */}
         <div className="border-b border-blue-900/30 pb-4">
           <div className="flex items-center gap-2 mb-1">
