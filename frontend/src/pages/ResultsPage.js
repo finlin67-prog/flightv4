@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Home, History, TrendingUp, Award, Sparkles, Compass } from 'lucide-react';
 import axios from 'axios';
+import ScenarioSimulatorPanel from '../components/ScenarioSimulatorPanel';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -559,6 +560,22 @@ const ResultsPage = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* What-If Simulator Embedded */}
+        <div className="mb-8">
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <div className="text-3xl">🎛️</div>
+              <h3 className="text-3xl font-bold text-white">What-If Simulator</h3>
+            </div>
+            <p className="text-lg text-blue-200 max-w-2xl mx-auto">
+              Explore how changes in budget, team size, and tech utilization could impact your marketing maturity
+            </p>
+          </div>
+          
+          {/* Embedded Compact Simulator */}
+          <ScenarioSimulatorPanel baseResults={results} compact={true} />
         </div>
 
         {/* Next Steps */}

@@ -1,0 +1,65 @@
+The Journey Map / Operations Center (Mapbox-based map) is the heart of this concept, but right now it is:
+
+- Buried at the bottom of a results page.
+- Only reachable via a small button labeled Operations Center or similar.
+- Visually crowded with too many surrounding columns/panels.
+- The map background sometimes does not load correctly.
+
+I want the Map to be a first-class destination in the cockpit, easy to find and visually central.
+
+Please make the following changes:
+
+1) Promote the Map to its own clear route:
+   - Create or confirm a dedicated route such as `/app/journey-map` or `/app/map`.
+   - In the left cockpit navigation, add or rename an item to:
+     - Label: “Journey Map” or “Flight Map”.
+     - Icon: e.g., a map or route icon.
+   - Clicking this nav item should always take the user to the full Map view.
+
+2) Use the existing map page as the basis:
+   - Identify the current component that renders the map (likely under names like `OperationsCenter`, `JourneyMap`, `MapView`).
+   - Make this the content for the `Journey Map` route, but improve its layout as described below.
+
+3) Simplify the Map layout:
+   - The center of the screen should be the Map itself, using most of the horizontal space.
+   - Around it, we can have supporting panels, but they should not crush the map.
+   - Suggested layout:
+     - Within the CockpitLayout center area:
+       - Left column: a small card with current aircraft, overall readiness score, and a toggle for “Show Connections”.
+       - Middle: the Map (large).
+       - Right column: Strategic Insights and city legend (stacked).
+   - Alternatively:
+     - Place the Map full-width at the top of the main area, and put Strategic Insights and legend below it.
+   - The key requirement is that the Map is visually dominant and easy to interact with.
+
+4) Fix map background / style issues:
+   - Ensure the Mapbox map is correctly initialized:
+     - Check that we are using a valid Mapbox style URL.
+     - Check that we are using the correct environment variable/token (e.g., `MAPBOX_TOKEN`), and that it’s being read correctly on the frontend.
+   - If the background isn’t loading due to style URL or token, update the JS to:
+     - Log clear errors to the console.
+     - Show a friendly message in the UI if the map cannot load (instead of a blank gray box).
+
+5) Surface the Map from other key pages:
+   - On the Flight Status / Results page:
+     - In the “What Now?” or “Ready for Takeoff” section, add a button:
+       - Label: “Open Journey Map”.
+       - This should navigate to the `/app/journey-map` route.
+   - On the Flight Deck / Journeys page:
+     - Add a secondary action: “View these journeys on the map” that also routes to the Journey Map.
+
+6) Keep right instruments and left nav as part of the cockpit:
+   - The Journey Map page should still live inside the CockpitLayout:
+     - Global left nav visible.
+     - Right Flight Instruments visible (or collapsible if that behavior exists).
+   - But the central area should be tuned so the Map has priority.
+
+Important constraints:
+- Do NOT remove the Map component or its data logic.
+- Do NOT change how city data or scores are loaded for the map (beyond fixing obviously incorrect style/token usage).
+- Only:
+  - Promote it to its own nav route,
+  - Simplify its layout so the map is central,
+  - Ensure it loads reliably,
+  - Add clear entry points from Results and Flight Deck.
+- Show me which files you changed and what the new Journey Map route is.
