@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import WelcomePage from './pages/WelcomePage';
 import HomePage from './pages/HomePage';
 import AssessmentPage from './pages/AssessmentPage';
 import TechStackPage from './pages/TechStackPage';
@@ -14,7 +15,8 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<WelcomePage />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
           <Route path="/tech-stack" element={<TechStackPage />} />
           <Route path="/results/:assessmentId" element={<ResultsPage />} />
