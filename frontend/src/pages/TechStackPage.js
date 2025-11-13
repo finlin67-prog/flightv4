@@ -63,6 +63,7 @@ const TechStackPage = () => {
       
       // Save assessment ID
       localStorage.setItem('current_assessment_id', result.data.id);
+      localStorage.setItem('latestAssessmentId', result.data.id);
       
       // Navigate to results
       navigate(`/results/${result.data.id}`);

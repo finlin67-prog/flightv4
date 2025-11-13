@@ -88,6 +88,9 @@ const AssessmentPage = () => {
       // Clear saved responses
       localStorage.removeItem('assessment_responses');
       
+      // Store latest assessment ID for navigation
+      localStorage.setItem('latestAssessmentId', response.data.id);
+      
       // Navigate to results page with the assessment ID
       navigate(`/results/${response.data.id}`);
     } catch (error) {

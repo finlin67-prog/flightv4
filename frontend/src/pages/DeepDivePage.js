@@ -702,6 +702,7 @@ const DeepDivePage = () => {
       });
 
       localStorage.removeItem('deep_dive_responses');
+      localStorage.setItem('latestAssessmentId', response.data.id);
       navigate(`/results/${response.data.id}`);
     } catch (error) {
       console.error('Error submitting deep dive:', error);

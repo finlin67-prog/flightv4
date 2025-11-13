@@ -15,6 +15,10 @@ const ResultsPage = () => {
 
   useEffect(() => {
     fetchResults();
+    // Store latest assessment ID for navigation
+    if (assessmentId) {
+      localStorage.setItem('latestAssessmentId', assessmentId);
+    }
   }, [assessmentId]);
 
   const fetchResults = async () => {

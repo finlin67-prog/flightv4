@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { UserProfileProvider } from './context/UserProfileContext';
+import Navigation from './components/Navigation';
 import WelcomePage from './pages/WelcomePage';
 import HomePage from './pages/HomePage';
 import AssessmentPage from './pages/AssessmentPage';
@@ -19,6 +20,7 @@ function App() {
     <UserProfileProvider>
       <BrowserRouter>
         <div className="App">
+          <Navigation />
           <Routes>
             <Route path="/" element={<WelcomePage />} />
             <Route path="/home" element={<HomePage />} />

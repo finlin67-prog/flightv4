@@ -192,6 +192,18 @@ The application is configured for Replit autoscale deployment:
 - Frontend is served from the build directory on port 5000
 
 ## Recent Changes
+- **2025-11-13**: Implemented Global Navigation System
+  - **Navigation Component**: Persistent top navigation bar across all pages (except Welcome)
+    - Desktop: Horizontal navigation with icons and labels
+    - Mobile: Hamburger menu with dropdown
+    - Flight-themed labels: Control Tower (Home), Assessments, Tech Stack, Flight Status (Results), Flight Deck, Simulator
+    - Active page highlighting with cyan accent
+    - Dynamic links to latest assessment results
+    - LocalStorage tracking of latest assessment ID
+  - **Integration**: Added to all pages via App.js wrapper
+  - **Responsive Design**: Different layouts for mobile and desktop
+  - **Sticky Positioning**: Navigation stays at top while scrolling
+
 - **2025-11-13**: Added What-If Simulator (Scenario Planning)
   - **Scenario Simulator Page**: Interactive what-if modeling interface
     - Slider controls for 4 key parameters (budget, headcount, tech utilization, process maturity)
