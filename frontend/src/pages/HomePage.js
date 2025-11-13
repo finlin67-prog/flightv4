@@ -44,6 +44,11 @@ const HomePage = () => {
               <ArrowRight className="w-5 h-5" />
             </button>
           </Link>
+          <Link to="/story/company-a">
+            <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-lg rounded-lg flex items-center gap-2 transition-all shadow-lg hover:shadow-purple-500/50">
+              📖 See Company A Example
+            </button>
+          </Link>
           <a href="#how-it-works">
             <button className="px-8 py-4 bg-slate-800/50 hover:bg-slate-800 text-blue-200 font-semibold text-lg rounded-lg border border-blue-900/30 transition-all">
               Learn How It Works

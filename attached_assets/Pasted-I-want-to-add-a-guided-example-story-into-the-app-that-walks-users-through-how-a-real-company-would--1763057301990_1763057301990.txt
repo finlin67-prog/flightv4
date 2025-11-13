@@ -1,0 +1,115 @@
+I want to add a guided example story into the app that walks users through how a real company would use the Marketing Flight Deck.
+
+This should be a **non-editable, pre-filled example** based on “Company A” that explains how to use the tool step by step.
+
+Please do the following:
+
+1. Create a new page/component:
+   - `src/pages/CompanyAStoryPage.js`
+
+2. Structure:
+   - This page should be a multi-step walkthrough with a simple stepper:
+     - Show one “step” at a time.
+     - Include **Next** and **Back** buttons.
+     - Show the current step number and total (e.g., “Step 2 of 6”).
+
+3. Content:
+   Use the following story content to populate the steps. You can adjust wording lightly to keep it concise, but keep the meaning and sequence:
+
+   --- STORY START ---
+
+   Step 1: Company A Overview
+   - Title: “Meet Company A”
+   - Body:
+     - “Company A is a $1B revenue healthcare company with a 10-person B2B marketing team and a $1M annual marketing budget.”
+     - “They have strong content capabilities but no real SEO strategy, no ABM program, and an under-utilized tech stack.”
+     - “They currently use HubSpot as CRM and marketing automation, plus GA4 and a basic CMS.”
+
+   Step 2: Defining the Flight Profile
+   - Title: “Boarding: Setting the Context”
+   - Body:
+     - “The Marketing Ops Manager at Company A logs into the Flight Deck.”
+     - “They select: Role = Marketing Operations, Goals = Improve performance & understand possibilities.”
+     - “They define the company profile: $1B revenue, 10-person team, Healthcare, B2B.”
+     - “This context helps size the aircraft and shape the recommended journeys.”
+
+   Step 3: Quick Assessment
+   - Title: “Quick Scan: Where Are We Now?”
+   - Body:
+     - “Company A completes the 10-question Quick Assessment.”
+     - “They score well on Content and Team, but lower on Demand Gen, Tech Stack, and ABM.”
+     - “The system calculates a combined score of about 4.2, or ~420 points.”
+     - “Their current aircraft is a Regional Jet ✈️ — capable of meaningful trips, but not long-haul global programs yet.”
+
+   Step 4: Deep Dives & Tech Stack
+   - Title: “Deep Dives and Tech Hangar”
+   - Body:
+     - “Next, Company A runs Deep Dives on Demand Gen and SEO.”
+     - “They discover that while content is strong, there’s almost no SEO strategy, and limited measurement of organic impact.”
+     - “In the Tech Stack Hangar, they list HubSpot, GA4, and their CMS — but realize utilization, reporting clarity, and ownership are all only mid-level.”
+     - “The Flight Deck now understands both their capabilities and the actual tools in their hangar.”
+
+   Step 5: Flight Deck Recommendations
+   - Title: “Recommended Journeys”
+   - Body:
+     - “With assessments and tech stack in place, the Flight Deck recommends three journeys for Company A:”
+       1. “From Content Islands to Connected SEO Journeys” (Content → SEO & Demand)
+       2. “From Spray & Pray to Targeted ABM” (Demand Gen → ABM)
+       3. “From AI Ideas to Integrated Stack” (AI → MarTech Integration)
+     - “Each journey shows origin and destination, required layovers (like Operations and Analytics), and a suggested flight plan of next steps.”
+     - “For example, the Content → SEO journey focuses on making their strong content discoverable and tied to pipeline.”
+
+   Step 6: Scenario Simulator
+   - Title: “Testing What-If Scenarios”
+   - Body:
+     - “Company A opens the Scenario Simulator and tries a few scenarios:”
+       - “Scenario 1: Add 3 headcount (SEO, Analytics, Ops). Result: a jump from Regional Jet to Commercial Jet 🛫 and a significant increase in Opportunity.”
+       - “Scenario 2: Migrate from HubSpot to Salesforce + Marketo. Result: only a small improvement unless processes and SEO are improved, too.”
+       - “Scenario 3: Improve SEO sophistication and tech utilization by 20%. Result: stronger gains in efficiency and opportunity than a pure platform swap.”
+     - “The takeaway: investing in SEO and operationalizing existing tools yields more impact than a disruptive platform migration.”
+
+   Step 7: The Decision
+   - Title: “From Score to Flight Plan”
+   - Body:
+     - “Instead of leaping straight into an expensive CRM/MAP migration, Company A sees a clearer, lower-risk path:”
+       - “Establish a strategic SEO function.”
+       - “Connect content, SEO, and Demand Gen more tightly.”
+       - “Improve HubSpot utilization and reporting before considering a platform change.”
+     - “The Flight Deck gives them not just a maturity score, but a practical flight plan and a way to communicate tradeoffs to leadership.”
+
+   Step 8: How You Can Use the Flight Deck
+   - Title: “Your Turn to Fly”
+   - Body:
+     - “You can use the Flight Deck the same way as Company A:”
+       - “Onboarding: Define your role and company profile.”
+       - “Assessments: Run a Quick Scan, Deep Dives, and map your Tech Stack.”
+       - “Results: See your aircraft, points, and REAO profile.”
+       - “Flight Deck: Explore suggested journeys and what-if scenarios.”
+     - “The goal isn’t a perfect score — it’s choosing the best next trips for your team with eyes wide open.”
+
+   --- STORY END ---
+
+4. UI layout:
+   - Use a card or panel layout for each step with:
+     - A title
+     - Body text
+     - Optional small icon or emoji (e.g., 🧩, 🛫, 🧭, 🔮)
+   - Add a simple progress indicator at the top like “Step X of 8”.
+
+5. Navigation from elsewhere:
+   - Add a way to navigate to this new page from:
+     - The Landing page (e.g., a link or button labeled “See Company A Example”).
+     - And/or from the Flight Deck page (e.g., “See a sample Flight Deck story”).
+   - Use a route like `/story/company-a` for this page.
+
+6. Routing:
+   - Register the new route in the app’s router (where other pages are defined).
+   - Ensure you do not break the initial route behavior (the app should still start at the Landing/Welcome page as before).
+
+Important constraints:
+- Do NOT delete or radically rewrite existing files.
+- Do NOT remove existing pages or routing.
+- You ARE allowed to create new files, new components, and new routes where needed.
+- Only ADD or MODIFY what is necessary.
+- Keep existing pages and routing working.
+- Show me exactly which files you changed.
