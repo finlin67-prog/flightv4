@@ -1,0 +1,94 @@
+I want to introduce a persistent “cockpit shell” layout for my app so that every major screen feels connected and users always see where they are and how they’re doing.
+
+The goal is:
+- Left vertical sidebar = navigation (destinations)
+- Right vertical sidebar = “flight instruments” (current scores, plane, profile, quick actions)
+- Center = main page content (assessments, results, map, etc.)
+- This shell should wrap all the “in-app” pages (Flight Deck, assessments, etc.), but not necessarily the public marketing landing page.
+
+Please do the following:
+
+1. Create a layout component:
+   - File: `src/layout/CockpitLayout.jsx` (or `.js` if that’s consistent with the project)
+   - This component should:
+     - Render a full-height flex layout with three main columns:
+       - Left sidebar (narrow, fixed width)
+       - Main content area (flex-grow)
+       - Right sidebar (medium width)
+     - Accept `children` as the main content.
+     - Optionally accept props for customizing the right sidebar, but it should have sensible defaults.
+
+2. Left sidebar: “Cockpit Navigation”
+   - This should be a vertical nav that is visible on every in-app page.
+   - Include links or buttons (using whatever routing system the app uses, e.g. React Router `<Link>` or `NavLink`) to the key sections:
+     - Home / Flight Deck (e.g. `/app` or `/flight-deck`)
+     - Quick Assessment
+     - Deep Dive Assessments
+     - Tech Stack
+     - Results / Dashboard
+     - Journey Map
+     - Scenario Simulator
+     - Operations Center
+     - Company A Story / Example
+     - Settings / Privacy
+   - Use icons and labels, but keep the design clean. For example:
+     - 🛫 Flight Deck
+     - 📋 Quick Assessment
+     - 🔍 Deep Dives
+     - 🧰 Tech Stack
+     - 📊 Results
+     - 🗺️ Journey Map
+     - 🧮 Simulator
+     - 🛰️ Ops Center
+     - 🎒 Company A Story
+     - ⚙️ Settings
+   - Highlight the current route (active state) using the existing design system (colors, typography) so users can see where they are.
+
+3. Right sidebar: “Flight Instruments Panel”
+   - This should show **contextual, read-only information** about the current user/session, pulling from the existing global state or props where possible.
+   - At minimum, include placeholders wired to the existing state or mock data:
+     - Current plane level (name + emoji) if available (e.g., from the latest assessment result).
+     - Total points (derived from `combined_score`, e.g. `Math.round(combined_score * 100)`).
+     - A summary of REAO scores (Readiness, Efficiency, Alignment, Opportunity), either as text or simple mini-bars.
+     - The onboarding inputs, if available: role, industry, team size, revenue band, budget band.
+   - Also include a small “Actions” section with buttons that:
+     - “I Feel Lucky” → navigates to the Flight Deck or triggers a function that shows random journeys (for now it can just navigate to the Flight Deck page; we can hook the randomness later).
+     - “Open Journey Map” → navigates to the map page.
+   - The idea is that this right sidebar is like a pilot’s instrument cluster: it should be visible on assessment, results, and journey pages.
+   - It’s okay if some data is not yet wired; you can start with friendly placeholders that will be filled once state is connected.
+
+4. Integrate the layout in routing:
+   - Identify where the app’s routes are defined (e.g., `src/App.js` or similar).
+   - For the “in-app” routes (e.g., Quick Assessment, Deep Dive, Tech Stack, Results, Flight Deck, Scenario Simulator, Journey Map, Operations Center, Company A Story):
+     - Wrap their page components in `CockpitLayout`.
+     - Example (pseudo-code):
+       - `<Route path="/app" element={<CockpitLayout><FlightDeckPage /></CockpitLayout>} />`
+   - The public landing/marketing page can remain outside of this layout if desired, e.g. `/` = LandingPage without CockpitLayout.
+
+5. Basic styling and responsiveness:
+   - Use the project’s existing styling approach (CSS, Tailwind, etc.).
+   - Aim for:
+     - Left sidebar: narrow (e.g., 220–260px).
+     - Right sidebar: medium (e.g., 280–320px).
+     - Main content: uses the remaining space.
+     - Full-height layout (100vh), scrollable main content area.
+   - Ensure that on smaller screens:
+     - The layout still works (sidebars can collapse into icons or stack; you can start with a simple desktop-first implementation and keep mobile behavior basic for now).
+
+6. Temporary mock data (if needed):
+   - If there is no global state yet for plane level, points, or REAO scores, create a simple hook or context accessor that:
+     - Uses real data when available (e.g., from the latest assessment result),
+     - Falls back to a small mock object so the UI doesn’t break.
+   - Comment the code where this should later be connected to live data.
+
+7. Do NOT change or remove existing page content:
+   - Quick Assessment, Results, Journey Map, etc. should keep their current internals.
+   - The only change is that they now appear inside the CockpitLayout and benefit from the persistent left and right panels.
+
+Important constraints:
+- Do NOT delete or radically rewrite existing files.
+- Do NOT remove existing pages or routing.
+- You ARE allowed to create new files, new components, and new routes where needed.
+- Only ADD or MODIFY what is necessary.
+- Keep existing pages and routing working.
+- Show me exactly which files you changed.

@@ -1,0 +1,33 @@
+I want to redesign my main landing/home page so that it acts as a “Pre-flight Check” for the Marketing Flight Deck.
+
+Right now the homepage looks nice but is too generic and no longer asks for the key inputs (role, industry, team size, revenue, budget, etc.). I want to bring those inputs back in a structured way and combine them with the “Search for a Flight / Popular Journeys” layout similar to the mockups I have (three-column style).
+
+Please update or create the main landing page component (e.g., `src/pages/LandingPage.js` or whatever file currently serves as the home route) with the following behavior and layout:
+
+1. Overall Goals
+   - The homepage should:
+     - Collect the user’s basic context: role, industry, team size, revenue band, budget band, and goals.
+     - Clearly explain what the Flight Deck does using the flight metaphor.
+     - Provide clear CTAs:
+       - Begin assessments
+       - “Search for a flight” (choose journeys based on their context)
+       - View popular journeys
+       - See the Company A example (but not front-and-center)
+     - Feel like a “Pre-flight Check” before entering the main cockpit.
+
+2. Hero Section (top)
+   - Keep or adapt the main hero copy along these lines:
+     - Headline: “Chart Your Marketing Flight Path”
+     - Subheadline: “Discover your current marketing capabilities, map your tech stack, and receive personalized transformation journeys for your team.”
+   - Primary CTA button:
+     - Label: “Begin Pre-flight Check”
+     - This should scroll down to / focus the input section on the same page, or simply bring the user to the inputs immediately.
+   - Secondary CTA buttons:
+     - “See Company A Example” → navigate to the Company A Story page route (e.g., `/story/company-a`).
+     - “Learn How It Works” → scroll to a “How Your Flight Plan Works” section lower on the page.
+
+3. Pre-flight Inputs Section (the key missing piece)
+   - Just below the hero, add a prominent card or panel titled something like:
+     - “Pre-flight Check: Tell Us About Your Crew”
+   - Inside this card, add form fields to capture:
+     - Role (dropdown or buttons): CMO / Head of Marketing / Marketing Operations / Campaigns / Brand / Product Mar
