@@ -1,0 +1,61 @@
+The What-If Simulator is very cool, but right now it feels siloed as its own page.
+
+I’d like to:
+- Keep the simulator functionality.
+- But ALSO surface it directly within the main Results / Flight Status page so users can tweak scenarios in context of their results.
+
+Current state:
+- There is a dedicated “Simulator” page/route with sliders for Budget Change, Headcount Change, Tech Utilization Change, and Process Maturity Change.
+- It shows an error dialog if the scenario API fails (e.g., “Error running simulation. Please try again.”).
+- The Results page (Flight Status) is a separate page that shows:
+  - Total Flight Miles
+  - REAO cards
+  - Insights
+  - “What Now?” section with CTAs including a button to go to the What-If Simulator.
+
+Please do the following refactor:
+
+1) Extract the simulator UI into a reusable component:
+   - Create a component file like:
+     - `src/components/ScenarioSimulatorPanel.jsx`
+   - Move the core UI from the Simulator page into this component:
+     - Sliders for Budget Change, Headcount Change, Tech Utilization, Process Maturity.
+     - The “Run Simulation” button and logic that calls the backend.
+     - The “Current vs Projected Aircraft” comparison display.
+   - Make this component accept props where needed (e.g., baseline assessment id) and handle its own local state.
+
+2) Use the reusable component in two places:
+   a) Existing Simulator route:
+      - Keep the current Simulator page/route, but replace most of its JSX with:
+        - `<ScenarioSimulatorPanel />`
+      - So existing functionality is preserved.
+
+   b) Flight Status / Results page:
+      - On the Flight Status page (the page that shows total Flight Miles, REAO metrics, etc.), add a new section near the bottom (or under “Ready for Takeoff”) that embeds:
+        - `<ScenarioSimulatorPanel />` in a more compact layout.
+      - This makes the simulator feel like a continuation of the results.
+
+3) Compact layout for embedded version:
+   - For the version on the Results page:
+     - It’s okay if you pass a prop like `compact` to `ScenarioSimulatorPanel` to:
+       - Reduce padding.
+       - Possibly show the sliders and comparison in a 2-column layout.
+   - The standalone Simulator page can still use the full layout.
+
+4) Error handling:
+   - Ensure that if the simulation errors (e.g., API returns error), the error message is shown inline in the panel (e.g., a small alert box), not only as a browser dialog.
+   - The old behavior of alert dialogs popping up is jarring; replace them with UI-level feedback where possible.
+
+5) Wiring to the latest assessment:
+   - If the simulator requires an `assessment_id`:
+     - Try to pull it from:
+       - The latest completed assessment shown on the Results page (e.g., from context or props).
+     - If none is available, either:
+       - Disable the simulator and show a message (“Complete an assessment to use the simulator”), or
+       - Ask the user to pick an assessment from a small dropdown.
+
+Important constraints:
+- Do NOT remove the simulator functionality or its route.
+- Do NOT break existing API calls to the scenario estimate endpoint.
+- Only refactor the UI into a reusable component and embed it in the Flight Status page as an additional section.
+- Show me which files you changed and how to use `ScenarioSimulatorPanel`.

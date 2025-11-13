@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Plus, X, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Check, Plus, X, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, Sliders } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -11,12 +11,30 @@ const TechStackPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedTools, setSelectedTools] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Category collapse state - default expanded on desktop, collapsed on mobile
+  const [expandedCategories, setExpandedCategories] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024; // Expand all on desktop
+    }
+    return true;
+  });
+  
+  // Category optimization/utilization scores (0-100 per category)
+  // TODO: Send this to backend when scoring logic is updated to use it
+  const [categoryOptimization, setCategoryOptimization] = useState({});
 
   useEffect(() => {
     fetchCategories();
     const saved = localStorage.getItem('tech_tools');
     if (saved) {
       setSelectedTools(JSON.parse(saved));
+    }
+    
+    // Load saved optimization scores
+    const savedOptimization = localStorage.getItem('tech_optimization');
+    if (savedOptimization) {
+      setCategoryOptimization(JSON.parse(savedOptimization));
     }
   }, []);
 
@@ -50,6 +68,52 @@ const TechStackPage = () => {
     localStorage.setItem('tech_tools', JSON.stringify([]));
   };
 
+  const toggleCategory = (categoryName) => {
+    if (typeof expandedCategories === 'boolean') {
+      // Convert from single boolean to object
+      const allCategories = {};
+      categories.forEach(cat => {
+        allCategories[cat.name] = cat.name === categoryName ? !expandedCategories : expandedCategories;
+      });
+      setExpandedCategories(allCategories);
+    } else {
+      setExpandedCategories(prev => ({
+        ...prev,
+        [categoryName]: !prev[categoryName]
+      }));
+    }
+  };
+
+  const isCategoryExpanded = (categoryName) => {
+    if (typeof expandedCategories === 'boolean') {
+      return expandedCategories;
+    }
+    return expandedCategories[categoryName] !== false;
+  };
+
+  const selectAllInCategory = (categoryTools) => {
+    const categoryToolIds = categoryTools.map(t => t.id);
+    const newSelection = [...new Set([...selectedTools, ...categoryToolIds])];
+    setSelectedTools(newSelection);
+    localStorage.setItem('tech_tools', JSON.stringify(newSelection));
+  };
+
+  const clearCategory = (categoryTools) => {
+    const categoryToolIds = categoryTools.map(t => t.id);
+    const newSelection = selectedTools.filter(id => !categoryToolIds.includes(id));
+    setSelectedTools(newSelection);
+    localStorage.setItem('tech_tools', JSON.stringify(newSelection));
+  };
+
+  const updateOptimization = (categoryName, value) => {
+    const newOptimization = {
+      ...categoryOptimization,
+      [categoryName]: value
+    };
+    setCategoryOptimization(newOptimization);
+    localStorage.setItem('tech_optimization', JSON.stringify(newOptimization));
+  };
+
   const handleSubmit = async () => {
     try {
       const responses = JSON.parse(localStorage.getItem('assessment_responses') || '{}');
@@ -57,6 +121,8 @@ const TechStackPage = () => {
       const submission = {
         responses,
         tech_tools: selectedTools
+        // TODO: Include categoryOptimization when backend scoring is updated
+        // tech_optimization: categoryOptimization
       };
 
       const result = await axios.post(`${API}/assessment/submit`, submission);
@@ -136,52 +202,124 @@ const TechStackPage = () => {
           </div>
         </div>
 
-        {/* Tool Categories */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {categories.map((category) => (
-            <div key={category.name} className="bg-slate-900/50 border border-blue-900/30 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">{category.name}</h3>
-              <div className="space-y-2">
-                {category.tools.map((tool) => {
-                  const isSelected = selectedTools.includes(tool.id);
-                  return (
+        {/* Tool Categories - Collapsible with Optimization Sliders */}
+        <div className="space-y-4 mb-8">
+          {categories.map((category) => {
+            const categorySelectedCount = selectedTools.filter(id => 
+              category.tools.map(t => t.id).includes(id)
+            ).length;
+            const isExpanded = isCategoryExpanded(category.name);
+            const optimizationValue = categoryOptimization[category.name] || 0;
+
+            return (
+              <div key={category.name} className="bg-slate-900/50 border border-blue-900/30 rounded-lg overflow-hidden">
+                {/* Category Header - Always Visible */}
+                <div className="p-4 border-b border-blue-900/20">
+                  <div className="flex items-center justify-between mb-3">
                     <button
-                      key={tool.id}
-                      onClick={() => toggleTool(tool.id)}
-                      className={`w-full p-3 rounded border transition-all text-left flex items-center gap-3 ${
-                        isSelected
-                          ? 'bg-cyan-600/20 border-cyan-500 text-cyan-400'
-                          : 'bg-slate-800/30 border-slate-700/30 hover:border-cyan-500/50 text-white'
-                      }`}
+                      onClick={() => toggleCategory(category.name)}
+                      className="flex items-center gap-3 hover:text-cyan-400 transition-colors flex-1"
                     >
-                      <div
-                        className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 ${
-                          isSelected ? 'bg-cyan-500 border-cyan-500' : 'border-slate-600'
-                        }`}
-                      >
-                        {isSelected && <Check className="w-4 h-4 text-white" />}
-                      </div>
-                      <span className="font-medium flex-1">{tool.name}</span>
-                      <span
-                        className={`text-xs px-2 py-1 rounded ${
-                          tool.tier === 'enterprise'
-                            ? 'bg-blue-600/20 text-blue-400'
-                            : tool.tier === 'mid'
-                            ? 'bg-cyan-600/20 text-cyan-400'
-                            : 'bg-slate-700/20 text-slate-400'
-                        }`}
-                      >
-                        {tool.tier}
+                      {isExpanded ? (
+                        <ChevronUp className="w-5 h-5 text-cyan-400" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-blue-400" />
+                      )}
+                      <h3 className="text-lg font-semibold text-white">{category.name}</h3>
+                      <span className="text-sm text-cyan-400 font-medium">
+                        {categorySelectedCount}/{category.tools.length} tools
                       </span>
                     </button>
-                  );
-                })}
+                    
+                    {/* Quick Actions */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => selectAllInCategory(category.tools)}
+                        className="px-3 py-1 text-xs bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded border border-blue-500/30 transition-all"
+                        title="Select all in category"
+                      >
+                        All
+                      </button>
+                      <button
+                        onClick={() => clearCategory(category.tools)}
+                        className="px-3 py-1 text-xs bg-slate-700/20 hover:bg-slate-700/30 text-slate-400 rounded border border-slate-600/30 transition-all"
+                        title="Clear category"
+                      >
+                        None
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Optimization Slider - Always Visible */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Sliders className="w-4 h-4 text-purple-400" />
+                      <label className="text-sm text-purple-300 font-medium">Optimization:</label>
+                    </div>
+                    <div className="flex-1 flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="25"
+                        value={optimizationValue}
+                        onChange={(e) => updateOptimization(category.name, parseInt(e.target.value))}
+                        className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                        style={{
+                          background: `linear-gradient(to right, rgb(168 85 247 / 0.5) 0%, rgb(168 85 247 / 0.5) ${optimizationValue}%, rgb(51 65 85) ${optimizationValue}%, rgb(51 65 85) 100%)`
+                        }}
+                      />
+                      <span className="text-sm font-semibold text-purple-400 w-12 text-right">
+                        {optimizationValue}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Collapsible Tool List */}
+                {isExpanded && (
+                  <div className="p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {category.tools.map((tool) => {
+                        const isSelected = selectedTools.includes(tool.id);
+                        return (
+                          <button
+                            key={tool.id}
+                            onClick={() => toggleTool(tool.id)}
+                            className={`p-2.5 rounded border transition-all text-left flex items-center gap-2.5 ${
+                              isSelected
+                                ? 'bg-cyan-600/20 border-cyan-500/50 text-cyan-400'
+                                : 'bg-slate-800/30 border-slate-700/30 hover:border-cyan-500/40 text-white hover:bg-slate-800/50'
+                            }`}
+                          >
+                            <div
+                              className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                isSelected ? 'bg-cyan-500 border-cyan-500' : 'border-slate-600'
+                              }`}
+                            >
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <span className="text-sm font-medium flex-1 truncate">{tool.name}</span>
+                            <span
+                              className={`text-xs px-1.5 py-0.5 rounded flex-shrink-0 ${
+                                tool.tier === 'enterprise'
+                                  ? 'bg-blue-600/30 text-blue-400 border border-blue-500/30'
+                                  : tool.tier === 'mid'
+                                  ? 'bg-cyan-600/30 text-cyan-400 border border-cyan-500/30'
+                                  : 'bg-slate-700/30 text-slate-400 border border-slate-600/30'
+                              }`}
+                            >
+                              {tool.tier === 'enterprise' ? 'ENT' : tool.tier === 'mid' ? 'MID' : 'BASE'}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="text-xs text-blue-400 mt-3">
-                {selectedTools.filter(id => category.tools.map(t => t.id).includes(id)).length}/{category.tools.length} selected
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Action Buttons */}
