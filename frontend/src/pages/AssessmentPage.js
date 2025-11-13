@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, CheckCircle, Plane, Send, Compass } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Plane, Send, Compass, Activity } from 'lucide-react';
 import axios from 'axios';
+import { useFlightStatus } from '../context/FlightStatusContext';
+import { calculateAverageScore, calculateLiveCombinedScore, getPlaneLevel, toFlightMiles } from '../utils/flightMetrics';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const AssessmentPage = () => {
   const navigate = useNavigate();
+  const { updateLiveStatus, clearLiveStatus } = useFlightStatus();
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState({});
@@ -22,6 +25,30 @@ const AssessmentPage = () => {
       setResponses(JSON.parse(saved));
     }
   }, []);
+
+  // Clear live status when component unmounts
+  useEffect(() => {
+    return () => {
+      clearLiveStatus();
+    };
+  }, [clearLiveStatus]);
+
+  // Update live status whenever responses change
+  useEffect(() => {
+    if (questions.length > 0) {
+      const avgScore = calculateAverageScore(responses);
+      const combinedScore = calculateLiveCombinedScore(responses, 0); // Tech score 0 until they add tech stack
+      const answeredCount = Object.keys(responses).length;
+
+      updateLiveStatus({
+        currentScore: avgScore,
+        combinedScore: combinedScore,
+        answeredCount: answeredCount,
+        totalQuestions: questions.length,
+        responses: responses
+      });
+    }
+  }, [responses, questions, updateLiveStatus]);
 
   const fetchQuestions = async () => {
     try {
@@ -55,20 +82,6 @@ const AssessmentPage = () => {
     }
   };
 
-  const calculateScore = () => {
-    const scores = Object.values(responses);
-    if (scores.length === 0) return 0;
-    return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-  };
-
-  const getPlaneLevel = (score) => {
-    if (score < 20) return { name: 'Grounded', emoji: '✈️' };
-    if (score < 40) return { name: 'Single Engine', emoji: '🛩️' };
-    if (score < 60) return { name: 'Regional Jet', emoji: '✈️' };
-    if (score < 80) return { name: 'Commercial Jet', emoji: '🛫' };
-    return { name: 'Airbus 380', emoji: '🛫' };
-  };
-
   const handleSubmitQuickAssessment = async () => {
     // Check if all questions are answered
     if (Object.keys(responses).length !== questions.length) {
@@ -85,8 +98,9 @@ const AssessmentPage = () => {
 
       const response = await axios.post(`${API}/assessment/submit`, submission);
       
-      // Clear saved responses
+      // Clear saved responses and live status
       localStorage.removeItem('assessment_responses');
+      clearLiveStatus();
       
       // Store latest assessment ID for navigation
       localStorage.setItem('latestAssessmentId', response.data.id);
@@ -119,9 +133,11 @@ const AssessmentPage = () => {
   const question = questions[currentQuestion];
   const totalQuestions = questions.length;
   const answeredCount = Object.keys(responses).length;
-  const avgScore = calculateScore();
-  const plane = getPlaneLevel(avgScore);
-  const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+  const avgScore = calculateAverageScore(responses);
+  const combinedScore = calculateLiveCombinedScore(responses, 0);
+  const plane = getPlaneLevel(combinedScore);
+  const flightMiles = toFlightMiles(combinedScore);
+  const progressPercent = (answeredCount / totalQuestions) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
@@ -154,12 +170,30 @@ const AssessmentPage = () => {
               </div>
             </div>
           )}
+
+          {/* Live Status Indicator */}
+          {answeredCount > 0 && (
+            <div className="mb-3 flex items-center gap-2 text-sm">
+              <Activity className="w-4 h-4 text-green-400 animate-pulse" />
+              <span className="text-green-400 font-semibold">Live flight status active</span>
+              <span className="text-blue-300">• Watch your instruments update in real-time →</span>
+            </div>
+          )}
           
-          <div className="w-full bg-slate-800/50 rounded h-2">
-            <div
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
+          {/* Progress Bar */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-blue-300">
+                Progress: <span className="font-semibold text-white">{answeredCount} of {totalQuestions}</span> questions answered
+              </span>
+              <span className="text-cyan-400 font-semibold">{Math.round(progressPercent)}%</span>
+            </div>
+            <div className="w-full bg-slate-800/50 rounded-full h-2.5">
+              <div
+                className="bg-gradient-to-r from-blue-500 via-cyan-500 to-green-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -169,30 +203,56 @@ const AssessmentPage = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Plane Indicator */}
-            <div className="bg-slate-900/50 border border-blue-900/30 rounded-lg p-8 text-center">
-              <p className="text-6xl mb-4">{plane.emoji}</p>
-              <h3 className="text-2xl font-bold text-cyan-400 mb-2">{plane.name}</h3>
-              <p className="text-sm text-blue-300 mb-4">{answeredCount} of {totalQuestions} answered</p>
-              <div className="w-full bg-slate-800/50 rounded h-3">
+            <div className="bg-gradient-to-br from-slate-900/70 to-blue-900/30 border-2 border-blue-900/40 rounded-xl p-6 text-center">
+              <div className="mb-3">
+                <div className="text-xs text-cyan-400 uppercase tracking-wide mb-1">Current Aircraft</div>
+                {answeredCount > 0 && answeredCount < totalQuestions && (
+                  <div className="text-xs text-orange-400 mb-2 flex items-center justify-center gap-1">
+                    <Activity className="w-3 h-3" />
+                    Live Preview
+                  </div>
+                )}
+              </div>
+              <p className="text-6xl mb-3">{plane.emoji}</p>
+              <h3 className="text-2xl font-bold text-cyan-400 mb-1">{plane.name}</h3>
+              <p className="text-xs text-blue-300 mb-4">{plane.description}</p>
+              
+              {/* Flight Miles */}
+              <div className="bg-slate-900/50 rounded-lg p-3 mb-3">
+                <div className="text-xs text-blue-400 mb-1">Flight Miles</div>
+                <div className="text-2xl font-bold text-white">{flightMiles}</div>
+                <div className="text-xs text-blue-300">/ 1000 points</div>
+              </div>
+
+              {/* Score Bar */}
+              <div className="w-full bg-slate-800/50 rounded-full h-3 mb-2">
                 <div
-                  className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded transition-all"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(avgScore, 100)}%` }}
                 />
               </div>
+              <p className="text-xs text-blue-300">{answeredCount} of {totalQuestions} answered</p>
             </div>
 
             {/* Progress Overview */}
             <div className="bg-slate-900/50 border border-blue-900/30 rounded-lg p-6">
-              <h4 className="text-sm font-semibold text-white mb-4 uppercase">Progress</h4>
+              <h4 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Question Status</h4>
               <div className="space-y-2">
                 {questions.map((q, idx) => (
                   <div
                     key={q.id}
-                    className={`flex items-center justify-between text-sm p-2 rounded ${
-                      idx === currentQuestion ? 'bg-blue-600/20' : ''
+                    className={`flex items-center justify-between text-sm p-2 rounded transition-all ${
+                      idx === currentQuestion 
+                        ? 'bg-blue-600/30 border border-blue-500/40' 
+                        : responses[q.id] !== undefined
+                          ? 'bg-green-900/20'
+                          : ''
                     }`}
                   >
-                    <span className={`${responses[q.id] !== undefined ? 'text-green-400' : 'text-blue-300'}`}>
+                    <span className={`flex items-center gap-2 ${
+                      responses[q.id] !== undefined ? 'text-green-400 font-medium' : 'text-blue-300'
+                    }`}>
+                      {idx === currentQuestion && <span className="text-cyan-400">→</span>}
                       {q.category}
                     </span>
                     {responses[q.id] !== undefined && <CheckCircle className="w-4 h-4 text-green-400" />}
@@ -225,7 +285,7 @@ const AssessmentPage = () => {
               {/* Question Header */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="px-3 py-1 rounded-full bg-blue-600/20 text-blue-400 text-xs font-semibold border border-blue-500/30">
+                  <span className="px-3 py-1 rounded-full bg-blue-600/20 text-blue-400 text-sm font-bold border border-blue-500/30">
                     Q{currentQuestion + 1}/{totalQuestions}
                   </span>
                   <span className="text-xs text-blue-300">{question.category}</span>
@@ -242,9 +302,9 @@ const AssessmentPage = () => {
                     <button
                       key={option.value}
                       onClick={() => handleAnswer(option.value)}
-                      className={`w-full p-4 rounded-lg border transition-all text-left flex items-start gap-3 ${
+                      className={`w-full p-4 rounded-lg border-2 transition-all text-left flex items-start gap-3 ${
                         isSelected
-                          ? 'bg-blue-600/20 border-blue-500/50'
+                          ? 'bg-blue-600/20 border-blue-500/60 shadow-lg shadow-blue-500/20'
                           : 'bg-slate-800/30 border-slate-700/30 hover:bg-slate-800/50 hover:border-blue-500/30'
                       }`}
                     >
@@ -256,7 +316,9 @@ const AssessmentPage = () => {
                         {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                       </div>
                       <div className="flex-1">
-                        <div className="text-white font-medium">{option.label}</div>
+                        <div className={`font-medium ${isSelected ? 'text-white' : 'text-blue-100'}`}>
+                          {option.label}
+                        </div>
                       </div>
                       {isSelected && <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />}
                     </button>
@@ -265,7 +327,7 @@ const AssessmentPage = () => {
               </div>
 
               {/* Navigation */}
-              <div className="flex items-center justify-between pt-4">
+              <div className="flex items-center justify-between pt-4 border-t border-blue-900/30">
                 <button
                   onClick={goPrev}
                   disabled={currentQuestion === 0}

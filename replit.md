@@ -24,9 +24,10 @@ The platform utilizes a strong flight-themed metaphor throughout its UI, includi
 - **Pre-flight Check Landing Page**: Primary landing page at route `/` that collects user context (role, industry, company size, team size, goals) in a structured form before assessments. Features popular journey examples, clear CTAs, and smooth scrolling to input sections. Saves data to UserProfileContext for personalized recommendations. Replaces the older 3-step wizard as the single entry point to the application.
 
 ### System Design Choices
-- **Data Flow**: Frontend collects user input, sends to backend API, backend calculates scores, stores results in MongoDB, and frontend displays visualizations.
-- **Scoring Algorithm**: Combines an assessment score (average of question responses), a weighted tech score, and integrates both into a combined score. R/E/A/O scores are derived by mapping question responses to dimensions with tech bonuses.
+- **Data Flow**: Frontend collects user input, sends to backend API, backend calculates scores, stores results in MongoDB, and frontend displays visualizations. Live assessment updates flow through FlightStatusContext to update Flight Instruments panel in real-time.
+- **Scoring Algorithm**: Combines an assessment score (average of question responses), a weighted tech score, and integrates both into a combined score. R/E/A/O scores are derived by mapping question responses to dimensions with tech bonuses. Live scoring uses shared utility functions to match backend calculations.
 - **Database Schema**: MongoDB stores assessment results including `assessment_score`, `tech_score`, `combined_score`, `plane_level`, `responses`, `tech_tools`, `reao_scores`, `insights`, and `recommendations`.
+- **Live Flight Status**: FlightStatusContext provides real-time updates during assessments, allowing Flight Instruments panel to show live scores, aircraft levels, and progress as users answer questions.
 - **Development Environment**: Frontend on port 5000, backend on port 8000, both accessible via Replit proxy and domain. Utilizes Replit Secrets Manager for sensitive environment variables like `MONGO_URL`.
 
 ## External Dependencies

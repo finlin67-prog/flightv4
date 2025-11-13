@@ -1,0 +1,112 @@
+I want to upgrade the Quick Assessment experience so that it feels like a pilot watching instruments while flying:
+
+- Show clear progress per question.
+- Update the current score live as each answer is selected.
+- Reflect that live score and plane level in the right “Flight Instruments” sidebar.
+
+Right now:
+- I already have a Quick Assessment page (e.g., `QuickScan`, `QuickAssessmentPage`, or similar) that:
+  - Shows ~10 questions.
+  - Each question has multiple-choice options (0, 25, 50, 75, 100 style).
+  - Sends answers to the backend when the user submits.
+- I also have a CockpitLayout with a right sidebar (“Flight Instruments”) that shows:
+  - Current Aircraft (plane level)
+  - Flight Miles
+  - REAO dimensions
+  - Profile info
+
+I want to make this more dynamic.
+
+Please do the following:
+
+1) Identify the Quick Assessment component
+   - Find the main component used for the Quick Assessment page inside the cockpit shell (the one I see when I go to “Quick Scan” / “Quick Assessment” in the left nav).
+   - This is likely something like `QuickAssessmentPage`, `QuickAssessment`, or similar in `src/pages` or `src/components`.
+
+2) Track per-question answers and progress
+   - Ensure the Quick Assessment component maintains state for:
+     - `responses`: a map of `questionId -> selectedValue`.
+   - Add derived values in that component:
+     - `totalQuestions` = total number of Quick Assessment questions.
+     - `answeredCount` = number of questions where the user has selected an answer.
+     - `progressPercent` = `answeredCount / totalQuestions * 100`.
+
+   - In the UI:
+     - Show `Q X / totalQuestions` clearly near the question (“Q3/10”).
+     - Add a progress bar above or below the question area that visually shows `progressPercent`.
+     - Optionally show a small text: “You’ve completed X of Y questions”.
+
+3) Compute a live temporary score as the user answers
+   - In the Quick Assessment component, compute a **live score** from the current `responses`:
+     - If there are answered questions:
+       - `liveAssessmentScore = average of selected values (0–100) across answered questions`.
+     - If none are answered, default to 0.
+   - Then compute a `liveCombinedScore` similar to how the backend does it, but using a simplified assumption:
+     - For now, you can ignore tech_score and just treat `liveCombinedScore` as `liveAssessmentScore / 10` (0–10 scale).
+     - Or, if there is easy access to a stored `tech_score`, you can approximate:
+       - `liveCombinedScore = (liveAssessmentScore / 10 + techScore) / 2`.
+   - This is only a **preview**, not a replacement for the official backend calculation.
+
+4) Wire the live score into the Flight Instruments panel
+   - Find where the right sidebar (Flight Instruments) gets its data:
+     - This might be inside `CockpitLayout` or a dedicated `FlightInstruments` component.
+   - Create a way for the Quick Assessment page to pass live status into that sidebar. For example:
+     - Add a React context or hook (e.g., `useFlightStatus`) that holds:
+       - `currentScore` (0–100 live assessment score)
+       - `combinedScore` (0–10 live)
+       - `answeredCount` and `totalQuestions`
+     - The Quick Assessment page updates this context as the user selects answers.
+     - The Flight Instruments component consumes that context and displays the values.
+
+   - In the right sidebar UI:
+     - Update the “Current Aircraft” / “Flight Miles” section to use the live values when available.
+     - Show:
+       - `Current Score: liveAssessmentScore` (e.g., “36/100”).
+       - `Flight Miles: Math.round(liveCombinedScore * 100)` (or similar).
+       - `Questions: answeredCount / totalQuestions`.
+
+   - If there is an existing logic to map combined score to a plane level (e.g. Grounded, Single Engine, Regional Jet, Commercial Jet, Wide-body, Airbus 380), reuse it:
+     - Either by importing a helper from a shared file if one exists (e.g., `getPlaneLevel(combinedScore)`),
+     - Or by moving the mapping logic into a shared helper file used by both backend-facing code and the instruments.
+
+5) Visual “pilot scanning instruments” feel
+   - Make sure the instruments update **immediately** whenever an answer is selected or changed:
+     - When the user clicks an answer:
+       - `responses` updates.
+       - `answeredCount`, `progressPercent`, `liveAssessmentScore`, and `liveCombinedScore` recompute.
+       - The right sidebar shows the new score, miles, and plane level.
+   - Add a subtle text label near the instruments like:
+     - “Live flight status based on your answers so far.”
+
+6) Keep submission behavior unchanged
+   - When the user finishes the Quick Assessment and clicks the main “Submit” or “Next” button that sends data to the backend:
+     - Keep the existing API call to `/api/assessment/submit` with full `responses` and `tech_tools`.
+   - The live score should be considered a preview; the final official result still comes from the backend response.
+   - After submission, the Results page can still use the backend-returned data as it does today.
+
+7) Handling partial completion
+   - If the user has only answered, say, 3 of 10 questions:
+     - `answeredCount` = 3.
+     - `liveAssessmentScore` should reflect only those 3 answers.
+     - The instruments should make this clear, e.g.:
+       - “Live Score (partial): 62/100” with a small note “Based on 3 of 10 questions”.
+   - You can implement this note either in the Quick Assessment page or inside the instruments panel.
+
+8) Code organization
+   - If needed, create:
+     - A small shared helper file for plane-level mapping and points, such as:
+       - `src/utils/flightMetrics.js` with:
+         - `toPoints(combinedScore)`
+         - `getPlaneLevel(combinedScore)` (using the same thresholds as elsewhere).
+     - A context/provider for the live flight status, such as:
+       - `src/context/FlightStatusContext.js` with:
+         - `{ currentScore, combinedScore, answeredCount, totalQuestions, setFlightStatus }`.
+
+   - The Quick Assessment updates the context via `setFlightStatus`, and the Flight Instruments component reads from it.
+
+Important constraints:
+- Do NOT delete or radically rewrite existing Quick Assessment or cockpit layout code.
+- Do NOT change the backend API shape or submission endpoint.
+- Only ADD the live calculation and wiring on the frontend.
+- Reuse existing plane level logic where possible rather than duplicating it.
+- Show me which files you changed and where the new context/helper functions live.

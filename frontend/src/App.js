@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProfileProvider } from './context/UserProfileContext';
 import { AssessmentProvider } from './context/AssessmentContext';
+import { FlightStatusProvider } from './context/FlightStatusContext';
 import Navigation from './components/Navigation';
 import CockpitLayout from './layout/CockpitLayout';
 import HomePage from './pages/HomePage';
@@ -21,6 +22,7 @@ function App() {
   return (
     <UserProfileProvider>
       <AssessmentProvider>
+        <FlightStatusProvider>
         <BrowserRouter>
           <div className="App">
             <Routes>
@@ -89,6 +91,7 @@ function App() {
             </Routes>
           </div>
         </BrowserRouter>
+        </FlightStatusProvider>
       </AssessmentProvider>
     </UserProfileProvider>
   );
