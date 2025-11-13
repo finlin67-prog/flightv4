@@ -16,13 +16,13 @@ const Navigation = () => {
   }, [location]);
 
   const isActive = (path) => {
-    if (path === '/home') return location.pathname === '/home';
+    if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
   };
 
   const navItems = [
     {
-      path: '/home',
+      path: '/',
       label: 'Control Tower',
       icon: Home,
       emoji: '🏠',
@@ -65,11 +65,6 @@ const Navigation = () => {
     }
   ];
 
-  // Don't show nav on welcome page
-  if (location.pathname === '/') {
-    return null;
-  }
-
   return (
     <>
       {/* Desktop Navigation */}
@@ -77,7 +72,7 @@ const Navigation = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo/Brand */}
-            <Link to="/home" className="flex items-center gap-2 text-white hover:text-cyan-400 transition-colors">
+            <Link to="/" className="flex items-center gap-2 text-white hover:text-cyan-400 transition-colors">
               <span className="text-2xl">✈️</span>
               <span className="text-xl font-bold">Flight Deck</span>
             </Link>
@@ -114,7 +109,7 @@ const Navigation = () => {
       <nav className="md:hidden bg-slate-900/95 border-b border-blue-900/30 backdrop-blur-sm sticky top-0 z-50">
         <div className="flex items-center justify-between h-16 px-4">
           {/* Logo */}
-          <Link to="/home" className="flex items-center gap-2 text-white">
+          <Link to="/" className="flex items-center gap-2 text-white">
             <span className="text-2xl">✈️</span>
             <span className="text-lg font-bold">Flight Deck</span>
           </Link>

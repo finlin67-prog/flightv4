@@ -4,7 +4,7 @@ import { Plane } from 'lucide-react';
 
 const CockpitNavigation = () => {
   const navItems = [
-    { path: '/home', label: 'Control Tower', emoji: '🏠', description: 'Home' },
+    { path: '/', label: 'Control Tower', emoji: '🏠', description: 'Home' },
     { path: '/assessment', label: 'Quick Scan', emoji: '📋', description: 'Assessment' },
     { path: '/deep-dive', label: 'Deep Dives', emoji: '🔍', description: 'Detailed Topics' },
     { path: '/tech-stack', label: 'Tech Hangar', emoji: '🧰', description: 'Your Stack' },

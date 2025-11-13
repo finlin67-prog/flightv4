@@ -1,0 +1,42 @@
+Now I want to refine the cockpit shell layout so the Quick Assessment page doesn’t feel so crowded.
+
+Current situation:
+- The CockpitLayout has a left sidebar (navigation), a main content area (e.g., Quick Assessment questions), and a right sidebar (Flight Instruments).
+- On desktop, the main content feels a bit squeezed between the two sidebars.
+- On smaller screens, the right sidebar takes up too much width.
+
+Please adjust the CockpitLayout as follows:
+
+1) Right sidebar width & styling:
+   - Make the right sidebar slightly narrower on desktop, and ensure it has a fixed max-width (e.g., around 280–320px instead of something very wide).
+   - Ensure the main content area has comfortable width for the assessment cards, without feeling jammed.
+
+2) Add a collapse/expand toggle for the right sidebar:
+   - In the CockpitLayout, add a small toggle control for the right sidebar, for example:
+     - A button near the top right or near the sidebar edge, labeled with an icon (e.g., “⇤” / “⇥” or a panel icon).
+   - When collapsed:
+     - The right sidebar should hide (or shrink to a very small strip with just an icon).
+     - The main content area should expand to take up the freed space.
+   - When expanded:
+     - The right sidebar appears again with the Flight Instruments.
+   - Preserve the state while the user navigates between in-app pages if possible (e.g., using React state in the layout or a context).
+
+3) Responsive behavior:
+   - On smaller screens / breakpoints:
+     - Consider making the right sidebar collapsed by default.
+     - The toggle should be clearly visible so users can still open it when they want the instruments.
+   - The goal is that on a laptop or smaller monitor, the assessment panels feel readable and not too squished.
+
+4) Don’t change the content of the right sidebar yet:
+   - Keep showing the same information (current aircraft, points, REAO gauges, Flight Profile, Quick Actions).
+   - Only adjust the layout, width, and add the ability to collapse/expand.
+
+5) Keep left navigation as-is:
+   - The left sidebar navigation is good and should remain visible by default on desktop.
+   - If you already have responsive behavior there, keep it; if not, desktop-first behavior is fine for now.
+
+Important constraints:
+- Do NOT delete or radically rewrite CockpitLayout or page components.
+- Only adjust the layout, widths, and add the collapse behavior.
+- Keep all existing routes and navigation working.
+- Show me which files you changed and briefly explain how to use the collapse toggle.

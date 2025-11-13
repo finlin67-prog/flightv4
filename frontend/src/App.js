@@ -1,10 +1,9 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProfileProvider } from './context/UserProfileContext';
 import { AssessmentProvider } from './context/AssessmentContext';
 import Navigation from './components/Navigation';
 import CockpitLayout from './layout/CockpitLayout';
-import WelcomePage from './pages/WelcomePage';
 import HomePage from './pages/HomePage';
 import AssessmentPage from './pages/AssessmentPage';
 import DeepDivePage from './pages/DeepDivePage';
@@ -25,14 +24,16 @@ function App() {
         <BrowserRouter>
           <div className="App">
             <Routes>
-              {/* Public/Marketing Pages - No Cockpit Layout */}
-              <Route path="/" element={<WelcomePage />} />
-              <Route path="/home" element={
+              {/* Public Marketing Home Page - Pre-flight Check Landing */}
+              <Route path="/" element={
                 <>
                   <Navigation />
                   <HomePage />
                 </>
               } />
+
+              {/* Redirect old /home route to new root */}
+              <Route path="/home" element={<Navigate to="/" replace />} />
 
               {/* In-App Pages - With Cockpit Layout */}
               <Route path="/assessment" element={

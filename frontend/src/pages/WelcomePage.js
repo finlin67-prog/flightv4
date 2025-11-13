@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Plane, User, Target, Building2, ArrowRight, CheckCircle } from 'lucide-react';
 import { useUserProfile } from '../context/UserProfileContext';
 
+/**
+ * @deprecated This component is no longer used as the primary onboarding flow.
+ * The new Pre-flight Check landing page (HomePage.js at route `/`) has replaced this 3-step wizard.
+ * This file is kept for reference but is not accessible via any route in App.js.
+ * 
+ * To restore if needed: Add route in App.js like:
+ * <Route path="/welcome-legacy" element={<WelcomePage />} />
+ */
 const WelcomePage = () => {
   const navigate = useNavigate();
   const { updateProfile } = useUserProfile();

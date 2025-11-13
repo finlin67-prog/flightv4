@@ -21,8 +21,7 @@ The platform utilizes a strong flight-themed metaphor throughout its UI, includi
 - **Company A Story - Guided Walkthrough**: An 8-step interactive, non-editable walkthrough demonstrating platform usage with a pre-filled example for a fictional company.
 - **Global Navigation System**: Persistent, responsive top navigation bar across all pages with active page highlighting.
 - **Cockpit Shell Layout**: Persistent 3-column layout (left navigation sidebar, center content, right instruments panel) that wraps all in-app pages, providing consistent navigation and real-time assessment status visibility. Includes AssessmentContext for global state management.
-- **Pre-flight Check Landing Page**: Redesigned home page that collects user context (role, industry, company size, team size, goals) in a structured form before assessments. Features popular journey examples, clear CTAs, and smooth scrolling to input sections. Saves data to UserProfileContext for personalized recommendations.
-- **Onboarding**: A 3-step "Choose Your Adventure" flow for user profile setup (Role, Objectives, Organization).
+- **Pre-flight Check Landing Page**: Primary landing page at route `/` that collects user context (role, industry, company size, team size, goals) in a structured form before assessments. Features popular journey examples, clear CTAs, and smooth scrolling to input sections. Saves data to UserProfileContext for personalized recommendations. Replaces the older 3-step wizard as the single entry point to the application.
 
 ### System Design Choices
 - **Data Flow**: Frontend collects user input, sends to backend API, backend calculates scores, stores results in MongoDB, and frontend displays visualizations.

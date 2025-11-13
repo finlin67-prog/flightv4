@@ -1,0 +1,57 @@
+I need to clean up my onboarding and home flows so the app is consistent.
+
+Right now I have:
+- An older 3-step onboarding wizard (Step 1: Define your Role, Step 2, Step 3) that appears full-screen with “Step 1 of 3”.
+- A newer, richer “Pre-flight Check” landing page that collects role, industry, team size, revenue, goals, and shows Popular Flight Paths, etc.
+- A cockpit shell layout used for inner pages (Quick Assessment, etc.)
+- A top navigation bar with a “Home” or similar link that sometimes takes me back to the older wizard screen or to an inconsistent version of the home.
+
+I want ONE clear flow:
+
+1) Root route `/`:
+   - Should only show the new “Pre-flight Check” home page (the one with:
+     - “Chart Your Marketing Flight Path”
+     - “Pre-flight Check: Tell Us About Your Crew”
+     - Popular Flight Paths
+     - How Your Flight Plan Works, etc.)
+   - This is the ONLY public “home” page. There should be no other separate onboarding wizard routes.
+
+2) Remove or retire the old 3-step wizard flow:
+   - Find the component(s) that render the old 3-step wizard with “Step 1 of 3 – Define your role” (screenshot-like):
+     - Large centered card with Role options (CMO, Marketing Ops, Campaigns, Brand, Product Marketing, Other).
+   - Do NOT use this wizard as a stand-alone route anymore.
+   - Either:
+     - Fully delete the route that points to this screen, and
+     - If possible, reuse any useful code for the Pre-flight Check inputs, OR just leave the component unused for now with a comment saying it’s deprecated.
+   - The key requirement: I should NOT be able to accidentally land on this wizard as a separate page by clicking “Home” or any other navigation.
+
+3) “Home” navigation behavior:
+   - In the top navigation bar (if there is one for the web app shell), ensure any item that represents “Home” or “Control Tower” that is meant to be the marketing landing page goes to the root route `/`, which is the new Pre-flight Check page.
+   - Inside the cockpit shell, if there is a “Control Tower” or “Flight Deck” link in the left navigation, that can go to the main in-app home (e.g., `/app` or `/flight-deck`) but should NOT take me back to the old wizard or a different home layout.
+
+4) “Proceed to Assessment” button on the Pre-flight Check page:
+   - On the new landing page (with the Pre-flight Check form), make sure the main button at the bottom of that card (e.g., “Proceed to Assessment” or equivalent) does the following:
+     - Validates / stores the Pre-flight data in the same global state/context used by the rest of the app.
+     - Navigates into the cockpit shell’s **Quick Assessment** page as the first in-app experience.
+       - For example, navigate to a route like `/app/assessment/quick` or whatever the current Quick Assessment route is.
+   - The idea: Fill Pre-flight → click Proceed → you’re now inside the cockpit + Quick Assessment.
+
+5) Popular Flight Paths & “Get Personalized Recommendations”:
+   - Keep the Popular Flight Paths section on the landing page as is or enhance it, but ensure any “Get Personalized Recommendations” button uses the Pre-flight inputs and then routes into the Flight Deck / Journeys page inside the cockpit shell.
+   - Again, this should NOT bring back the old wizard.
+
+6) Clean up any duplicate or confusing routes:
+   - If there are now multiple routes that act as “home” or onboarding (e.g., `/onboarding`, `/home`, `/start`, etc.), consolidate them:
+     - Only `/` should be the Pre-flight Check marketing home.
+     - In-app routes (inside CockpitLayout) should start at `/app` (or similar) and NOT display the old wizard.
+
+Please:
+- List which files you modified.
+- Briefly explain which component is now the official landing page and which route(s) were removed or repointed.
+
+Important constraints:
+- Do NOT delete or radically rewrite unrelated files.
+- Do NOT remove or break existing in-app pages (Quick Assessment, Tech Stack, Flight Deck, etc.).
+- You ARE allowed to remove the old wizard route and mark that component as deprecated or unused.
+- You ARE allowed to update routing and navigation labels/targets to make this flow consistent.
+- Keep the cockpit shell layout intact for inner pages.
