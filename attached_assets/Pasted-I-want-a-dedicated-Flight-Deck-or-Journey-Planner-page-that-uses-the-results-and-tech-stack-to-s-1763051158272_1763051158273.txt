@@ -1,0 +1,41 @@
+I want a dedicated “Flight Deck” or “Journey Planner” page that uses the results and tech stack to suggest journeys.
+
+Task:
+1. Create a new page, for example:
+   - `src/pages/FlightDeckPage.js`
+
+2. Data inputs:
+   - This page should read:
+     - The latest assessment results (scores, REAO scores, plane level, etc.).
+     - The tech stack inventory (if available) from global state or context.
+   - If needed, it can also fetch recent assessment history from `/api/assessment/history` and use the latest assessment as the basis.
+
+3. On this page, show:
+   - A summary of the current “plane level” and points.
+   - A highlight of key weak areas (e.g., lowest-scoring REAO dimensions or functions).
+
+4. Recommended journeys:
+   - For each weak area, create a “journey card” that includes:
+     - A journey title (e.g., “From Spray & Pray to Targeted ABM”).
+     - Origin & destination functions (e.g., Demand Gen → ABM).
+     - Required layovers (e.g., Marketing Operations, Analytics, Data).
+     - A short explanation and 3–5 suggested next steps.
+
+   - The journeys should conceptually connect:
+     - Maturity gaps (low scores on certain topics)
+     - Tech gaps (missing or under-optimized tools from the tech stack assessment)
+
+5. “I feel lucky” option:
+   - Add a button “I feel lucky”.
+   - When clicked, select 4–5 journeys (either from recommendations or a predefined catalog) and show them as cards even if they’re not the highest priority, to inspire exploration.
+
+6. Navigation:
+   - Add a route to this Flight Deck page from the main navigation or the Results page, such as a button “Open Flight Deck” on the Results page.
+
+Important constraints:
+- Do NOT delete or radically rewrite existing files.
+- Do NOT remove existing pages or routing.
+- You ARE allowed to create new pages, new components, and new routes where needed.
+- Only ADD or MODIFY what is necessary.
+- Keep existing pages and routing working.
+- Show me exactly which files you changed.

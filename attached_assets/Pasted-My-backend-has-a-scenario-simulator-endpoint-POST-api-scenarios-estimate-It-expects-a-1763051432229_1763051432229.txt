@@ -1,0 +1,49 @@
+My backend has a scenario simulator endpoint:
+- POST /api/scenarios/estimate
+- It expects:
+  - `assessment_id` (string)
+  - `scenario` object with:
+    - budget_pct (float, -50 to +50)
+    - headcount (int, -10 to +10)
+    - tech_utilization_pct (float, -30 to +30)
+    - process_maturity_pct (float, -20 to +20)
+- It returns adjusted REAO scores, a new combined score, a new plane level, and some delta insights.
+
+Task:
+1. Create a new page or component, for example:
+   - `src/pages/ScenarioSimulatorPage.js`
+
+2. Inputs:
+   - Let the user pick an existing assessment. For now:
+     - You can fetch `/api/assessment/history` and let the user select an `assessment_id` from a dropdown, or
+     - Just use the most recent assessment by default if that’s easier.
+
+   - Add UI controls (sliders or numeric inputs) for:
+     - Budget change (%) from -50 to +50
+     - Headcount change (integer, -10 to +10)
+     - Tech utilization change (%) from -30 to +30
+     - Process maturity change (%) from -20 to +20
+
+3. When the user clicks “Simulate”:
+   - Call POST `/api/scenarios/estimate` with:
+     - `assessment_id` = the chosen assessment
+     - `scenario` = { budget_pct, headcount, tech_utilization_pct, process_maturity_pct }
+
+4. Display:
+   - The base scores vs adjusted scores (for REAO dimensions).
+   - The new combined score and new plane level.
+   - The “delta_insights” returned by the API (e.g., “Efficiency: ↑ 4.5 points”).
+   - Use a visual metaphor like:
+     - A comparison chart or simple before/after cards.
+     - Copy like: “Here’s how your aircraft changes with this scenario.”
+
+5. Integration:
+   - Add a button or link from the Results page and/or Flight Deck page: “Open Scenario Simulator”.
+
+Important constraints:
+- Do NOT delete or radically rewrite existing files.
+- Do NOT remove existing pages or routing.
+- You ARE allowed to create new pages, new components, and new routes where needed.
+- Only ADD or MODIFY what is necessary.
+- Keep existing pages and routing working.
+- Show me exactly which files you changed.

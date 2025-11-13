@@ -7,6 +7,7 @@ import AssessmentPage from './pages/AssessmentPage';
 import DeepDivePage from './pages/DeepDivePage';
 import TechStackPage from './pages/TechStackPage';
 import ResultsPage from './pages/ResultsPage';
+import FlightDeckPage from './pages/FlightDeckPage';
 import HistoryPage from './pages/HistoryPage';
 import ScenarioPage from './pages/ScenarioPage';
 import OperationsCenterPage from './pages/OperationsCenterPage';
@@ -24,6 +25,7 @@ function App() {
             <Route path="/deep-dive" element={<DeepDivePage />} />
             <Route path="/tech-stack" element={<TechStackPage />} />
             <Route path="/results/:assessmentId" element={<ResultsPage />} />
+            <Route path="/flight-deck/:assessmentId" element={<FlightDeckPage />} />
             <Route path="/scenario/:assessmentId" element={<ScenarioPage />} />
             <Route path="/operations-center/:assessmentId" element={<OperationsCenterPage />} />
             <Route path="/history" element={<HistoryPage />} />

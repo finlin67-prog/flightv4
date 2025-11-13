@@ -133,12 +133,28 @@ Or use the provided script:
      - Flight-themed UI with ✈️, 🛫, 🧭, ✨ icons
    - Plane levels: Grounded → Single Engine → Regional Jet → Commercial Jet → Wide-Body Jet
 
-4. **Scenario Planning**
+4. **Flight Deck - Journey Planner** _(NEW)_
+   - Personalized journey recommendations based on assessment results
+   - Shows current plane level and flight miles
+   - Highlights priority focus areas (weak REAO dimensions)
+   - 8 journey templates with detailed flight plans:
+     - Journey title, origin → destination
+     - Required layovers (intermediate capabilities)
+     - 5 actionable next steps per journey
+     - Tech stack requirements
+     - Estimated timeline
+   - "I Feel Lucky" feature for random journey inspiration
+   - Intelligent recommendations based on:
+     - Assessment scores (weak areas)
+     - REAO dimension gaps
+     - Tech stack maturity
+
+5. **Scenario Planning**
    - What-if analysis for resource changes
    - Budget, headcount, tech utilization modeling
    - Impact visualization
 
-5. **History & Tracking**
+6. **History & Tracking**
    - Assessment history storage
    - MongoDB-based persistence
    - Result comparison over time
@@ -166,6 +182,23 @@ The application is configured for Replit autoscale deployment:
 - Frontend is served from the build directory on port 5000
 
 ## Recent Changes
+- **2025-11-13**: Added Flight Deck - Journey Planner Page
+  - **Flight Deck Page**: Dedicated journey planning interface
+    - Reads latest assessment results and analyzes gaps
+    - Shows current plane level, flight miles, and weak areas
+    - Displays 8 pre-built journey templates with complete flight plans
+    - Intelligent journey recommendations based on scores and REAO gaps
+    - **Tech Gap Analysis**: Shows which required tools are missing (⚠️) vs present (✓)
+    - Each journey includes: origin/destination, layovers, next steps, tech needs, timeline
+    - "I Feel Lucky" feature for random journey exploration
+    - Route templates: ABM, Automation, Attribution, Content Demand, Sales Alignment, Tech Stack Integration, Predictive Analytics, Personalization
+  - **Navigation**: Added "Open Flight Deck" button on Results page
+  - **Smart Matching**: Recommends journeys based on:
+    - Assessment score ranges
+    - Weak REAO dimensions  
+    - Missing critical tools (Marketing Automation, ABM, Analytics, CRM)
+    - Tech stack maturity (tool count and tech score)
+
 - **2025-11-13**: Added Deep Dive Assessments Feature
   - **Deep Dive Page**: New dedicated page for topic-specific assessments
     - 10 marketing function topics to choose from

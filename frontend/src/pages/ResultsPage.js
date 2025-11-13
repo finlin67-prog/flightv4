@@ -564,6 +564,12 @@ const ResultsPage = () => {
             Explore your transformation journeys, simulate different scenarios, or manage your marketing operations from the control center.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
+            <Link to={`/flight-deck/${assessmentId}`}>
+              <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:shadow-purple-500/50 transition-all">
+                🗺️ Open Flight Deck
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
             <Link to={`/operations-center/${assessmentId}`}>
               <button className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:shadow-cyan-500/50 transition-all">
                 🌍 Operations Center
