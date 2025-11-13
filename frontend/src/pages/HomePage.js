@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Plane, Users, Building2, DollarSign, Target, Sparkles, Map, TrendingUp } from 'lucide-react';
 import { useUserProfile } from '../context/UserProfileContext';
+import DropdownSelect from '../components/ui/DropdownSelect';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -126,28 +127,19 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="space-y-6 mb-8">
-            {/* Role Selection - Compact 3-column grid */}
+          <div className="space-y-5 mb-8">
+            {/* Role Selection - Dropdown */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">
                 <Users className="w-4 h-4" />
                 Your Role
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {['CMO', 'Head of Marketing', 'Marketing Operations', 'Demand Gen / Campaigns', 'Brand / Product Marketing', 'Other'].map(role => (
-                  <button
-                    key={role}
-                    onClick={() => handleInputChange('role', role)}
-                    className={`px-4 py-2.5 rounded-lg text-center text-sm transition-all ${
-                      formData.role === role
-                        ? 'bg-cyan-600 border-2 border-cyan-400 text-white font-semibold'
-                        : 'bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-600/50 text-blue-200'
-                    }`}
-                  >
-                    {role}
-                  </button>
-                ))}
-              </div>
+              <DropdownSelect
+                value={formData.role}
+                onChange={(value) => handleInputChange('role', value)}
+                options={['CMO', 'Head of Marketing', 'Marketing Operations', 'Demand Gen / Campaigns', 'Brand / Product Marketing', 'Other']}
+                placeholder="Select Role..."
+              />
             </div>
 
             {/* Industry Selection - Dropdown */}
@@ -156,66 +148,40 @@ const HomePage = () => {
                 <Building2 className="w-4 h-4" />
                 Industry
               </label>
-              <select
+              <DropdownSelect
                 value={formData.industry}
-                onChange={(e) => handleInputChange('industry', e.target.value)}
-                className="w-full px-4 py-3 bg-slate-800/50 border-2 border-slate-700 focus:border-cyan-600 rounded-lg text-blue-200 focus:outline-none transition-all"
-              >
-                <option value="">Select your industry...</option>
-                <option value="SaaS / Technology">SaaS / Technology</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Financial Services">Financial Services</option>
-                <option value="Manufacturing">Manufacturing</option>
-                <option value="E-commerce / Retail">E-commerce / Retail</option>
-                <option value="Professional Services">Professional Services</option>
-                <option value="Other">Other</option>
-              </select>
+                onChange={(value) => handleInputChange('industry', value)}
+                options={['SaaS / Technology', 'Healthcare', 'Financial Services', 'Manufacturing', 'E-commerce / Retail', 'Professional Services', 'Other']}
+                placeholder="Select Industry..."
+              />
             </div>
 
-            {/* Company Revenue - Horizontal Pills */}
+            {/* Company Revenue - Dropdown */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">
                 <DollarSign className="w-4 h-4" />
                 Company Revenue
               </label>
-              <div className="flex flex-wrap gap-2">
-                {['<$10M', '$10M - $50M', '$50M - $250M', '$250M - $1B', '>$1B'].map(size => (
-                  <button
-                    key={size}
-                    onClick={() => handleInputChange('companySize', size)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                      formData.companySize === size
-                        ? 'bg-cyan-600 border-2 border-cyan-400 text-white'
-                        : 'bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-600/50 text-blue-200'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
+              <DropdownSelect
+                value={formData.companySize}
+                onChange={(value) => handleInputChange('companySize', value)}
+                options={['<$10M', '$10M - $50M', '$50M - $250M', '$250M - $1B', '>$1B']}
+                placeholder="Select Company Revenue..."
+              />
             </div>
 
-            {/* Team Size - Horizontal Pills */}
+            {/* Marketing Team Size - Dropdown */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">
                 <Users className="w-4 h-4" />
                 Marketing Team Size
               </label>
-              <div className="flex flex-wrap gap-2">
-                {['1-5 people', '6-15 people', '16-30 people', '31-50 people', '50+ people'].map(team => (
-                  <button
-                    key={team}
-                    onClick={() => handleInputChange('teamSize', team)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                      formData.teamSize === team
-                        ? 'bg-cyan-600 border-2 border-cyan-400 text-white'
-                        : 'bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-600/50 text-blue-200'
-                    }`}
-                  >
-                    {team}
-                  </button>
-                ))}
-              </div>
+              <DropdownSelect
+                value={formData.teamSize}
+                onChange={(value) => handleInputChange('teamSize', value)}
+                options={['1-5 people', '6-15 people', '16-30 people', '31-50 people', '50+ people']}
+                placeholder="Select Team Size..."
+              />
             </div>
           </div>
 
