@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, CheckCircle, Plane, Send } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, CheckCircle, Plane, Send, Compass } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -196,6 +196,23 @@ const AssessmentPage = () => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Deep Dive CTA */}
+            <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-2 border-purple-500/40 rounded-lg p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Compass className="w-5 h-5 text-purple-400" />
+                <h4 className="text-sm font-semibold text-white uppercase">Want More Detail?</h4>
+              </div>
+              <p className="text-sm text-blue-200 mb-4">
+                Explore specific marketing terminals with 5-10 detailed questions per topic
+              </p>
+              <Link to="/deep-dive">
+                <button className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-purple-500/50">
+                  <Compass className="w-4 h-4" />
+                  Explore Deep Dive
+                </button>
+              </Link>
             </div>
           </div>
 

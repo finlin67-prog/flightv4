@@ -107,6 +107,14 @@ Or use the provided script:
    - Scoring from 0-100 for each category
    - R/E/A/O dimensional analysis
 
+1a. **Deep Dive Assessments** _(NEW)_
+   - Topic selection screen with 10 marketing functions
+   - 5 detailed questions per topic for in-depth evaluation
+   - Progressive maturity options (0-100 scale)
+   - Submits to same backend endpoint
+   - Navigation from Quick Assessment sidebar
+   - Flight metaphor: "Explore Specific Terminals"
+
 2. **Tech Stack Evaluation**
    - Multi-tier technology categorization
    - Tool selection across 6 major categories
@@ -158,6 +166,16 @@ The application is configured for Replit autoscale deployment:
 - Frontend is served from the build directory on port 5000
 
 ## Recent Changes
+- **2025-11-13**: Added Deep Dive Assessments Feature
+  - **Deep Dive Page**: New dedicated page for topic-specific assessments
+    - 10 marketing function topics to choose from
+    - 5 detailed questions per topic with maturity-based options
+    - Submits to same backend endpoint as Quick Assessment
+    - Flight/travel themed UI ("Explore Specific Terminals")
+  - **Navigation**: Added "Explore Deep Dive" CTA in Assessment page sidebar
+  - **Topics Available**: Strategy, Content, Demand Gen, Sales Alignment, Operations, Tech Stack, ABM, Analytics, Team, Budget
+  - **Question Scale**: Each question has 5 options (0, 25, 50, 75, 100) representing maturity levels
+
 - **2025-11-13**: Enhanced Quick Assessment and Onboarding
   - **Quick Assessment**: Added direct "Submit Quick Assessment" button
     - Submits to POST /api/assessment/submit with responses and empty tech_tools

@@ -1,0 +1,38 @@
+I want to extend my app with “Deep Dive” assessments for each major marketing function.
+
+Context:
+- I already have a Quick Assessment that covers high-level topics like Strategy, Demand Gen, Content, Operations, Tech Stack, ABM, Analytics, Team, Budget, etc.
+- The backend accepts assessment submissions at POST /api/assessment/submit, where `responses` is a map of question_id -> numeric value and `tech_tools` is an array of tool IDs.
+
+Task:
+1. Create a dedicated Deep Dive component or page, for example:
+   - `src/pages/DeepDivePage.js`
+   or a similar structure consistent with the project.
+
+2. On this Deep Dive page:
+   - Show a list of topics (e.g., Strategy, Demand Gen, Content, Sales Alignment, Operations, Tech Stack, ABM, Analytics, Team, Budget).
+   - Let the user select ONE topic to deep dive into.
+
+3. When a topic is selected:
+   - Show 5–10 more detailed questions specifically for that topic.
+   - Each question should be multiple-choice, with 5 options mapped to numeric values like 0, 25, 50, 75, 100.
+   - Use clear, descriptive labels for each option that reflect increasing maturity or capability.
+
+4. When the user submits a Deep Dive:
+   - Build a `responses` object that only includes this topic’s question IDs and scores.
+   - Send a POST to `/api/assessment/submit` with:
+     - `responses` = merged or combined with any existing data if appropriate, or for now just this topic’s responses.
+     - `tech_tools` = an array (can be empty for now or reuse existing selections if available).
+   - After submit, navigate to the Results page and show updated results.
+
+5. Navigation:
+   - From the main Assessments area, add a way to navigate to this Deep Dive page (e.g., a “Deep Dive by Topic” button).
+   - Make sure it uses the travel/flight metaphor in the copy, e.g., “Explore a specific terminal” or “Focus on one destination”.
+
+Important constraints:
+- Do NOT delete or radically rewrite existing files.
+- Do NOT remove existing pages or routing.
+- You ARE allowed to create new pages, new components, and new routes where needed.
+- Only ADD or MODIFY what is necessary.
+- Keep existing pages and routing working.
+- Show me exactly which files you changed.
