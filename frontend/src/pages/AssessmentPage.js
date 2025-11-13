@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, CheckCircle, Plane, Send, Compass, Activity } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Plane, Send, Compass, Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import axios from 'axios';
 import { useFlightStatus } from '../context/FlightStatusContext';
 import { calculateAverageScore, calculateLiveCombinedScore, getPlaneLevel, toFlightMiles } from '../utils/flightMetrics';
@@ -18,6 +18,15 @@ const AssessmentPage = () => {
   const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  
+  // Question Status panel collapse state - default expanded on desktop, collapsed on mobile
+  const [isQuestionStatusExpanded, setIsQuestionStatusExpanded] = useState(() => {
+    // Check if mobile on initial render
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024; // lg breakpoint
+    }
+    return true;
+  });
 
   useEffect(() => {
     fetchQuestions();
@@ -204,10 +213,10 @@ const AssessmentPage = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Sidebar */}
-          <div className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Sidebar - Narrower, more compact */}
+          <div className="lg:col-span-1 space-y-6">
             {/* Plane Indicator */}
             <div className="bg-gradient-to-br from-slate-900/70 to-blue-900/30 border-2 border-blue-900/40 rounded-xl p-6 text-center">
               <div className="mb-3">
@@ -240,31 +249,51 @@ const AssessmentPage = () => {
               <p className="text-xs text-blue-300">{answeredCount} of {totalQuestions} answered</p>
             </div>
 
-            {/* Progress Overview */}
-            <div className="bg-slate-900/50 border border-blue-900/30 rounded-lg p-6">
-              <h4 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Question Status</h4>
-              <div className="space-y-2">
-                {questions.map((q, idx) => (
-                  <div
-                    key={q.id}
-                    className={`flex items-center justify-between text-sm p-2 rounded transition-all ${
-                      idx === currentQuestion 
-                        ? 'bg-blue-600/30 border border-blue-500/40' 
-                        : responses[q.id] !== undefined
-                          ? 'bg-green-900/20'
-                          : ''
-                    }`}
-                  >
-                    <span className={`flex items-center gap-2 ${
-                      responses[q.id] !== undefined ? 'text-green-400 font-medium' : 'text-blue-300'
-                    }`}>
-                      {idx === currentQuestion && <span className="text-cyan-400">→</span>}
-                      {q.category}
-                    </span>
-                    {responses[q.id] !== undefined && <CheckCircle className="w-4 h-4 text-green-400" />}
-                  </div>
-                ))}
-              </div>
+            {/* Collapsible Question Status */}
+            <div className="bg-slate-900/50 border border-blue-900/30 rounded-lg overflow-hidden">
+              {/* Header - Always visible */}
+              <button
+                onClick={() => setIsQuestionStatusExpanded(!isQuestionStatusExpanded)}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-800/50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-white uppercase tracking-wide">Question Status</h4>
+                  <span className="text-xs text-cyan-400 font-semibold">
+                    ({answeredCount}/{totalQuestions})
+                  </span>
+                </div>
+                {isQuestionStatusExpanded ? (
+                  <ChevronUp className="w-4 h-4 text-blue-400" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-blue-400" />
+                )}
+              </button>
+              
+              {/* Collapsible Content */}
+              {isQuestionStatusExpanded && (
+                <div className="px-4 pb-4 space-y-2">
+                  {questions.map((q, idx) => (
+                    <div
+                      key={q.id}
+                      className={`flex items-center justify-between text-xs p-2 rounded transition-all ${
+                        idx === currentQuestion 
+                          ? 'bg-blue-600/30 border border-blue-500/40' 
+                          : responses[q.id] !== undefined
+                            ? 'bg-green-900/20'
+                            : ''
+                      }`}
+                    >
+                      <span className={`flex items-center gap-2 ${
+                        responses[q.id] !== undefined ? 'text-green-400 font-medium' : 'text-blue-300'
+                      }`}>
+                        {idx === currentQuestion && <span className="text-cyan-400">→</span>}
+                        <span className="truncate">{q.category}</span>
+                      </span>
+                      {responses[q.id] !== undefined && <CheckCircle className="w-3 h-3 text-green-400 flex-shrink-0" />}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Deep Dive CTA */}
@@ -285,9 +314,9 @@ const AssessmentPage = () => {
             </div>
           </div>
 
-          {/* Main Question */}
-          <div className="lg:col-span-2">
-            <div className="bg-slate-900/50 border border-blue-900/30 rounded-lg p-8 space-y-6">
+          {/* Main Question - More horizontal space */}
+          <div className="lg:col-span-3">
+            <div className="bg-slate-900/50 border border-blue-900/30 rounded-lg p-6 lg:p-8 space-y-6 max-w-4xl">
               {/* Question Header */}
               <div>
                 <div className="flex items-center gap-2 mb-2">

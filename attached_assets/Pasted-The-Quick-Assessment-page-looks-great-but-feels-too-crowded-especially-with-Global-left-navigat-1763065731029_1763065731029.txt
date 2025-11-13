@@ -1,0 +1,40 @@
+The Quick Assessment page looks great but feels too crowded, especially with:
+- Global left navigation (Cockpit sidebar)
+- Question Status section on the left inside the main content
+- Full-width question card
+- Right Flight Instruments sidebar
+
+I don’t want to remove the global left nav (that’s part of the cockpit), but I DO want the Quick Assessment content area to feel less busy.
+
+Please adjust the Quick Assessment layout as follows:
+
+1) Make the in-page “Question Status” panel collapsible:
+   - This is the panel inside the main content (not the global left nav) that lists:
+     - Marketing Strategy, Content Marketing, Demand Generation, etc. with checkmarks.
+   - Wrap this panel in a collapsible section or accordion:
+     - Default state on desktop: expanded is fine, but use a smaller width and clear separation.
+     - On smaller screens: default to collapsed to save space.
+   - Provide a small header like:
+     - “Question Status (10/10 answered)” with a toggle caret or “Show/Hide” link.
+   - When collapsed, only the header is visible; the list of topics is hidden.
+
+2) Reduce horizontal density:
+   - Ensure the main center area (question card + answer options) has more horizontal space:
+     - If necessary, slightly reduce the max-width of the question card so there’s more margin between the card and the right sidebar.
+   - The goal is that the main question and answers feel easy to read, not squeezed.
+
+3) Top summary bar:
+   - Keep or add a slim top bar in the Quick Assessment main content with:
+     - “Live flight status active – Watch your instruments update in real-time.”
+     - Progress: “10 of 10 questions answered” with a progress bar.
+   - This helps orient the user and allows you to remove any redundant text that might be crowding the question area.
+
+4) Don’t touch the global left nav or right instruments:
+   - The global cockpit left nav (Control Tower, Quick Scan, Deep Dives, etc.) should stay.
+   - The right Flight Instruments sidebar should stay as implemented, including collapse behavior if we added it earlier.
+
+Important constraints:
+- Do NOT remove the global left navigation or the right Flight Instruments sidebar.
+- Do NOT change the underlying assessment logic or API calls.
+- Only adjust the in-page layout for Quick Assessment (especially the “Question Status” block) to reduce visual clutter.
+- Show me which files you changed and how to toggle the Question Status panel.

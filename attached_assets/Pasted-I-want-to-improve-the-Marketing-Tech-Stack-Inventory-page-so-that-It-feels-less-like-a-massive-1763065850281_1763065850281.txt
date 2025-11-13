@@ -1,0 +1,48 @@
+I want to improve the Marketing Tech Stack Inventory page so that:
+
+- It feels less like a massive wall of checkboxes.
+- It captures not just whether a tool is present, but roughly how well it’s being used (“optimization”).
+
+Current state:
+- The Tech Stack inventory page shows several categories (CRM & Customer Data, Marketing Automation & Email, Analytics & BI, etc.), each containing multiple tools with checkboxes.
+- There is already a “Select All / Clear All” at the top.
+- The right sidebar instruments show 0/30 tools selected, etc.
+
+Please make the following changes:
+
+1) Category visual grouping improvements:
+   - Keep the current categories, but:
+     - Make each category collapsible (accordion-style) with a header row:
+       - Header shows category name and a small “X/Y tools selected” label.
+     - Default: categories expanded on desktop, but collapsible so the user can hide categories they’re not working on right now.
+   - On smaller screens, consider collapsing them by default.
+
+2) Add an optional “Optimization” slider per category:
+   - For each category (e.g., CRM & Customer Data, Marketing Automation & Email, Analytics & BI, etc.), add a small slider or select control labeled “Optimization” or “Utilization”.
+     - Range: 0–100% in rough steps (e.g., 0, 25, 50, 75, 100) OR 1–5 scale internally.
+   - This slider is **optional** and should not block submission if left untouched.
+   - For now, it can:
+     - Be stored locally in the same state as the Tech Stack selection.
+     - Be included in the payload sent to the backend as a simple numeric value per category (if a clean place exists to include it).
+     - If integrating with the backend is too invasive for now, just store it in client state and mark where to hook it into scoring later with comments.
+
+3) Compact tool listing:
+   - Keep individual tool checkboxes (Salesforce, HubSpot, etc.), but:
+     - Use a tighter vertical spacing between items.
+     - Optionally show the “tier” (enterprise/mid/foundational) as a small pill on the right rather than full text.
+   - Make sure “Select All” applies to all tools across all categories, and consider adding “Select All in Category” within each category header.
+
+4) Coverage indicator:
+   - Keep or add the “Coverage %” indicator at the top, but have it use:
+     - `totalSelectedTools / totalTools` as it already does (or as close as possible to current behavior).
+   - It’s okay if the optimization sliders don’t yet affect this; they’re a separate dimension.
+
+5) Don’t break existing scoring:
+   - The primary scoring logic for the Tech Stack (how many tools and which tiers) should continue to work as before.
+   - The optimization slider is a new signal we can use later; for now, it’s mainly for UX and future scoring.
+
+Important constraints:
+- Do NOT remove existing tools, categories, or change the core data model in a breaking way.
+- Only add collapsible behavior, per-category optimization sliders, and compact styling.
+- Keep the current “View Results” button behavior unchanged.
+- Show me which files you changed and where the optimization values live in state.
