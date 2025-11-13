@@ -118,7 +118,11 @@ Or use the provided script:
    - **Progress to Next Level**: Visual progress bar showing miles to upgrade
    - **Flight Instrument Panel**: REAO dimension scores (Readiness, Efficiency, Alignment, Opportunity)
    - **Flight Crew Insights**: Personalized insights from assessment
-   - **Recommended Flight Routes**: Strategic transformation journeys
+   - **"What Now?" Section**: Answers next steps with concrete journeys
+     - **Personalized Journeys**: Backend recommendations with flight plan stages and required tools
+     - **"I Feel Lucky"**: Random journey generator for inspiration (7 templates available)
+     - Required tools displayed as pill badges
+     - Flight-themed UI with ✈️, 🛫, 🧭, ✨ icons
    - Plane levels: Grounded → Single Engine → Regional Jet → Commercial Jet → Wide-Body Jet
 
 4. **Scenario Planning**
