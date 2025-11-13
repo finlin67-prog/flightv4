@@ -90,8 +90,20 @@ Or use the provided script:
 
 ### Key Features
 
-1. **Marketing Assessment**
-   - 10-question assessment across key marketing capabilities
+1. **Quick Marketing Assessment**
+   - 10-question assessment across key marketing capabilities:
+     - Marketing Strategy & Goals
+     - Content Marketing
+     - Demand Generation
+     - Sales & Marketing Alignment
+     - Marketing Operations
+     - Tech Stack Foundation
+     - Account-Based Marketing
+     - Analytics & Insights
+     - Team & Skills
+     - Budget & Resources
+   - 5-option scale per question (0, 25, 50, 75, 100)
+   - Direct submission to backend API
    - Scoring from 0-100 for each category
    - R/E/A/O dimensional analysis
 
@@ -138,11 +150,17 @@ The application is configured for Replit autoscale deployment:
 - Frontend is served from the build directory on port 5000
 
 ## Recent Changes
-- **2025-11-13**: Added "Choose Your Adventure" onboarding flow
-  - Created UserProfileContext for global state management
-  - Redesigned WelcomePage with 3-step onboarding (Role, Objectives, Organization)
-  - Added flight/travel themed copy and UI elements
-  - User profile data now persists across the app for personalization
+- **2025-11-13**: Enhanced Quick Assessment and Onboarding
+  - **Quick Assessment**: Added direct "Submit Quick Assessment" button
+    - Submits to POST /api/assessment/submit with responses and empty tech_tools
+    - Navigates directly to results page after submission
+    - Added informational banner explaining assessment purpose
+    - Users can still choose "Add Tech Stack" for detailed assessment
+  - **Onboarding**: Created "Choose Your Adventure" 3-step flow
+    - UserProfileContext for global state management
+    - WelcomePage with Role, Objectives, Organization selection
+    - Flight/travel themed copy throughout
+    - User profile data persists across the app
   
 - **2025-11-12**: Initial Replit setup completed
   - Fixed React/date-fns version compatibility issues

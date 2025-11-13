@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, CheckCircle, Plane } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Plane, Send } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -12,6 +12,7 @@ const AssessmentPage = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchQuestions();
@@ -68,6 +69,34 @@ const AssessmentPage = () => {
     return { name: 'Airbus 380', emoji: '🛫' };
   };
 
+  const handleSubmitQuickAssessment = async () => {
+    // Check if all questions are answered
+    if (Object.keys(responses).length !== questions.length) {
+      alert('Please answer all questions before submitting');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const submission = {
+        responses: responses,
+        tech_tools: [] // Empty array for quick assessment
+      };
+
+      const response = await axios.post(`${API}/assessment/submit`, submission);
+      
+      // Clear saved responses
+      localStorage.removeItem('assessment_responses');
+      
+      // Navigate to results page with the assessment ID
+      navigate(`/results/${response.data.id}`);
+    } catch (error) {
+      console.error('Error submitting assessment:', error);
+      alert('Failed to submit assessment. Please try again.');
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 flex items-center justify-center">
@@ -98,7 +127,7 @@ const AssessmentPage = () => {
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs text-blue-400 uppercase tracking-wide">Step 1 of 2: Assessment</p>
+              <p className="text-xs text-blue-400 uppercase tracking-wide">Quick Assessment</p>
               <h1 className="text-2xl font-bold text-white">Marketing Flight Assessment</h1>
             </div>
             <div className="text-right">
@@ -106,6 +135,23 @@ const AssessmentPage = () => {
               <p className="text-xs text-blue-300">Current Score</p>
             </div>
           </div>
+          
+          {/* Info Banner */}
+          {currentQuestion === 0 && answeredCount === 0 && (
+            <div className="mb-4 p-4 bg-blue-600/20 border border-blue-500/30 rounded-lg">
+              <div className="flex items-start gap-3">
+                <Plane className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-white font-semibold mb-1">Quick Assessment Overview</h3>
+                  <p className="text-sm text-blue-200">
+                    This 10-question assessment will give you a high-level view of your current marketing maturity across key dimensions. 
+                    Answer all questions to unlock personalized insights and discover your recommended flight path to marketing excellence.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="w-full bg-slate-800/50 rounded h-2">
             <div
               className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded transition-all duration-300"
@@ -209,25 +255,37 @@ const AssessmentPage = () => {
                   Previous
                 </button>
 
-                {currentQuestion === totalQuestions - 1 ? (
-                  <button
-                    onClick={() => navigate('/tech-stack')}
-                    disabled={responses[question.id] === undefined}
-                    className="px-6 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
-                  >
-                    Continue to Tech Stack
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={goNext}
-                    disabled={responses[question.id] === undefined}
-                    className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
-                  >
-                    Next Question
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                )}
+                <div className="flex gap-3">
+                  {currentQuestion === totalQuestions - 1 ? (
+                    <>
+                      <button
+                        onClick={handleSubmitQuickAssessment}
+                        disabled={answeredCount !== totalQuestions || submitting}
+                        className="px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all shadow-lg hover:shadow-green-500/50"
+                      >
+                        <Send className="w-4 h-4" />
+                        {submitting ? 'Submitting...' : 'Submit Quick Assessment'}
+                      </button>
+                      <button
+                        onClick={() => navigate('/tech-stack')}
+                        disabled={responses[question.id] === undefined}
+                        className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                      >
+                        Add Tech Stack
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={goNext}
+                      disabled={responses[question.id] === undefined}
+                      className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                    >
+                      Next Question
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
