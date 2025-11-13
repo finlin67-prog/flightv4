@@ -591,6 +591,12 @@ const ResultsPage = () => {
                 <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
+            <Link to="/journey-map">
+              <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:shadow-purple-500/50 transition-all">
+                🗺️ Open Journey Map
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
             <Link to={`/scenario-simulator/${assessmentId}`}>
               <button className="px-6 py-3 bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:shadow-green-500/50 transition-all">
                 🎛️ What-If Simulator

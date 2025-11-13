@@ -16,6 +16,7 @@ import CompanyAStoryPage from './pages/CompanyAStoryPage';
 import HistoryPage from './pages/HistoryPage';
 import ScenarioPage from './pages/ScenarioPage';
 import OperationsCenterPage from './pages/OperationsCenterPage';
+import JourneyMapPage from './pages/JourneyMapPage';
 import './App.css';
 
 function App() {
@@ -76,6 +77,11 @@ function App() {
               <Route path="/scenario/:assessmentId" element={
                 <CockpitLayout>
                   <ScenarioPage />
+                </CockpitLayout>
+              } />
+              <Route path="/journey-map" element={
+                <CockpitLayout>
+                  <JourneyMapPage />
                 </CockpitLayout>
               } />
               <Route path="/operations-center/:assessmentId" element={
