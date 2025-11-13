@@ -112,10 +112,14 @@ Or use the provided script:
    - Tool selection across 6 major categories
    - Weighted scoring based on enterprise vs SMB tools
 
-3. **Results & Insights**
-   - Plane level classification (Grounded → Airbus 380)
-   - Personalized recommendations
-   - Actionable insights based on assessment
+3. **Results & Insights (Points & Planes Metaphor)**
+   - **Flight Miles**: Combined score converted to 0-100 points system
+   - **Current Aircraft**: Plane level with emoji, name, and description
+   - **Progress to Next Level**: Visual progress bar showing miles to upgrade
+   - **Flight Instrument Panel**: REAO dimension scores (Readiness, Efficiency, Alignment, Opportunity)
+   - **Flight Crew Insights**: Personalized insights from assessment
+   - **Recommended Flight Routes**: Strategic transformation journeys
+   - Plane levels: Grounded → Single Engine → Regional Jet → Commercial Jet → Wide-Body Jet
 
 4. **Scenario Planning**
    - What-if analysis for resource changes
