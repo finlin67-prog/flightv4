@@ -126,19 +126,19 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            {/* Role Selection */}
+          <div className="space-y-6 mb-8">
+            {/* Role Selection - Compact 3-column grid */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">
                 <Users className="w-4 h-4" />
                 Your Role
               </label>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {['CMO', 'Head of Marketing', 'Marketing Operations', 'Demand Gen / Campaigns', 'Brand / Product Marketing', 'Other'].map(role => (
                   <button
                     key={role}
                     onClick={() => handleInputChange('role', role)}
-                    className={`px-4 py-3 rounded-lg text-left transition-all ${
+                    className={`px-4 py-2.5 rounded-lg text-center text-sm transition-all ${
                       formData.role === role
                         ? 'bg-cyan-600 border-2 border-cyan-400 text-white font-semibold'
                         : 'bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-600/50 text-blue-200'
@@ -150,43 +150,42 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Industry Selection */}
+            {/* Industry Selection - Dropdown */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">
                 <Building2 className="w-4 h-4" />
                 Industry
               </label>
-              <div className="grid grid-cols-1 gap-2">
-                {['SaaS / Technology', 'Healthcare', 'Financial Services', 'Manufacturing', 'E-commerce / Retail', 'Professional Services', 'Other'].map(industry => (
-                  <button
-                    key={industry}
-                    onClick={() => handleInputChange('industry', industry)}
-                    className={`px-4 py-3 rounded-lg text-left transition-all ${
-                      formData.industry === industry
-                        ? 'bg-cyan-600 border-2 border-cyan-400 text-white font-semibold'
-                        : 'bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-600/50 text-blue-200'
-                    }`}
-                  >
-                    {industry}
-                  </button>
-                ))}
-              </div>
+              <select
+                value={formData.industry}
+                onChange={(e) => handleInputChange('industry', e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800/50 border-2 border-slate-700 focus:border-cyan-600 rounded-lg text-blue-200 focus:outline-none transition-all"
+              >
+                <option value="">Select your industry...</option>
+                <option value="SaaS / Technology">SaaS / Technology</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Financial Services">Financial Services</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="E-commerce / Retail">E-commerce / Retail</option>
+                <option value="Professional Services">Professional Services</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
 
-            {/* Company Size */}
+            {/* Company Revenue - Horizontal Pills */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">
-                <Building2 className="w-4 h-4" />
+                <DollarSign className="w-4 h-4" />
                 Company Revenue
               </label>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="flex flex-wrap gap-2">
                 {['<$10M', '$10M - $50M', '$50M - $250M', '$250M - $1B', '>$1B'].map(size => (
                   <button
                     key={size}
                     onClick={() => handleInputChange('companySize', size)}
-                    className={`px-4 py-3 rounded-lg text-left transition-all ${
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                       formData.companySize === size
-                        ? 'bg-cyan-600 border-2 border-cyan-400 text-white font-semibold'
+                        ? 'bg-cyan-600 border-2 border-cyan-400 text-white'
                         : 'bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-600/50 text-blue-200'
                     }`}
                   >
@@ -196,20 +195,20 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Team Size */}
+            {/* Team Size - Horizontal Pills */}
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">
                 <Users className="w-4 h-4" />
                 Marketing Team Size
               </label>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="flex flex-wrap gap-2">
                 {['1-5 people', '6-15 people', '16-30 people', '31-50 people', '50+ people'].map(team => (
                   <button
                     key={team}
                     onClick={() => handleInputChange('teamSize', team)}
-                    className={`px-4 py-3 rounded-lg text-left transition-all ${
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                       formData.teamSize === team
-                        ? 'bg-cyan-600 border-2 border-cyan-400 text-white font-semibold'
+                        ? 'bg-cyan-600 border-2 border-cyan-400 text-white'
                         : 'bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-600/50 text-blue-200'
                     }`}
                   >
@@ -220,7 +219,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          {/* Goals Selection */}
+          {/* Goals Selection - Compact Checkboxes */}
           <div className="mb-8">
             <label className="flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">
               <Target className="w-4 h-4" />
@@ -235,18 +234,20 @@ const HomePage = () => {
                 'Plan team expansion',
                 'Benchmark against peers'
               ].map(goal => (
-                <button
+                <label
                   key={goal}
-                  onClick={() => handleGoalToggle(goal)}
-                  className={`px-4 py-3 rounded-lg text-left transition-all ${
-                    formData.goals.includes(goal)
-                      ? 'bg-cyan-600 border-2 border-cyan-400 text-white font-semibold'
-                      : 'bg-slate-800/50 border-2 border-slate-700 hover:border-cyan-600/50 text-blue-200'
-                  }`}
+                  className="flex items-start gap-3 px-4 py-2.5 bg-slate-800/30 border border-slate-700 hover:border-cyan-600/50 rounded-lg cursor-pointer transition-all group"
                 >
-                  <span className="mr-2">{formData.goals.includes(goal) ? '✓' : '○'}</span>
-                  {goal}
-                </button>
+                  <input
+                    type="checkbox"
+                    checked={formData.goals.includes(goal)}
+                    onChange={() => handleGoalToggle(goal)}
+                    className="mt-0.5 w-4 h-4 rounded border-2 border-slate-600 bg-slate-700 text-cyan-600 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-0 cursor-pointer"
+                  />
+                  <span className="text-sm text-blue-200 group-hover:text-white transition-colors">
+                    {goal}
+                  </span>
+                </label>
               ))}
             </div>
           </div>
