@@ -498,6 +498,19 @@ const FlightDeckPage = () => {
             </div>
           </div>
 
+          {/* Quick Actions */}
+          <div className="mb-8 bg-slate-900/30 border border-blue-900/30 rounded-xl p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Explore More Tools</h3>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate(`/scenario-simulator/${results.id}`)}
+                className="px-6 py-3 bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:shadow-green-500/50 transition-all"
+              >
+                🎛️ What-If Simulator
+              </button>
+            </div>
+          </div>
+
           {/* I Feel Lucky Section */}
           <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border-2 border-purple-500/30 rounded-xl p-8">
             <div className="text-center mb-6">

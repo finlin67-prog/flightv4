@@ -149,10 +149,20 @@ Or use the provided script:
      - REAO dimension gaps
      - Tech stack maturity
 
-5. **Scenario Planning**
-   - What-if analysis for resource changes
-   - Budget, headcount, tech utilization modeling
-   - Impact visualization
+5. **What-If Simulator (Scenario Planning)** _(NEW)_
+   - Interactive scenario modeling page
+   - Adjustable parameters with sliders:
+     - Budget change (-50% to +50%)
+     - Headcount change (-10 to +10)
+     - Tech utilization change (-30% to +30%)
+     - Process maturity change (-20% to +20%)
+   - Real-time simulation results:
+     - Aircraft comparison (current vs projected)
+     - REAO dimension changes with visual indicators
+     - Delta insights from backend
+     - Before/after progress bars
+   - Integrates with POST /api/scenarios/estimate endpoint
+   - Reset functionality to clear all parameters
 
 6. **History & Tracking**
    - Assessment history storage
@@ -182,6 +192,17 @@ The application is configured for Replit autoscale deployment:
 - Frontend is served from the build directory on port 5000
 
 ## Recent Changes
+- **2025-11-13**: Added What-If Simulator (Scenario Planning)
+  - **Scenario Simulator Page**: Interactive what-if modeling interface
+    - Slider controls for 4 key parameters (budget, headcount, tech utilization, process maturity)
+    - Calls POST /api/scenarios/estimate with scenario inputs
+    - Displays aircraft comparison (current vs projected plane level)
+    - Shows REAO dimension changes with visual delta indicators (↑/↓)
+    - Presents delta insights from backend API
+    - Reset button to clear all parameters
+  - **Navigation**: Added "What-If Simulator" buttons on Results and Flight Deck pages
+  - **Visual Design**: Before/after comparison cards, progress bars, trend indicators
+
 - **2025-11-13**: Added Flight Deck - Journey Planner Page
   - **Flight Deck Page**: Dedicated journey planning interface
     - Reads latest assessment results and analyzes gaps
