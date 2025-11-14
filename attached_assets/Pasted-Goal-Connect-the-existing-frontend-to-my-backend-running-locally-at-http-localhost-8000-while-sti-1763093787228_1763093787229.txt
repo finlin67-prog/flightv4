@@ -1,0 +1,139 @@
+Goal
+Connect the existing frontend to my backend running locally at http://localhost:8000, while still keeping things working for the deployed version (Render/Replit).
+
+The backend is a FastAPI server with routes like:
+
+GET /api/assessment/questions
+
+POST /api/assessment/submit
+
+GET /api/assessment/results/{id}
+
+GET /api/tech/categories
+
+POST /api/scenarios/estimate
+
+I want the frontend to use my local backend when I’m developing on my machine, and the existing deployed URL(s) when it’s running in production (Replit / Render).
+
+What I want you to do
+
+Find where the API base URL is defined or hard-coded.
+Search for things like:
+
+axios.create({ baseURL: ... })
+
+fetch("https://...")
+
+API_BASE_URL, VITE_API_URL, REACT_APP_API_BASE_URL, etc.
+
+Any hard-coded URLs that look like my old Replit or Render endpoints.
+
+Create a single, centralized config for the API base URL.
+
+Add a file like:
+
+src/config/api.ts or src/config/api.js (match the project’s style).
+
+In that file, define logic like this:
+
+// src/config/api.ts (or .js)
+const isLocalhost =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+   window.location.hostname === "127.0.0.1");
+
+const LOCAL_API_BASE_URL = "http://localhost:8000/api";
+
+// TODO: replace with the actual deployed URL you find in the project
+const PROD_API_BASE_URL = "https://REPLACE_ME_WITH_DEPLOYED_URL/api";
+
+export const API_BASE_URL = isLocalhost
+  ? LOCAL_API_BASE_URL
+  : PROD_API_BASE_URL;
+
+
+For PROD_API_BASE_URL, use whatever URL the app is currently using to talk to the backend (Render or Replit). Don’t guess; detect it from the existing code.
+
+If the project already uses an env variable (like import.meta.env.VITE_API_URL), then:
+
+Prefer that, but still keep a sensible fallback between localhost vs prod.
+Example:
+
+const envUrl = import.meta.env.VITE_API_URL;
+
+const isLocalhost =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+   window.location.hostname === "127.0.0.1");
+
+const defaultLocal = "http://localhost:8000/api";
+const defaultProd = "https://REPLACE_ME_WITH_DEPLOYED_URL/api";
+
+export const API_BASE_URL =
+  envUrl ||
+  (isLocalhost ? defaultLocal : defaultProd);
+
+
+Update all API calls to use this API_BASE_URL.
+
+If we have a shared axios instance, update it to:
+
+import axios from "axios";
+import { API_BASE_URL } from "../config/api"; // adjust path as needed
+
+export const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+});
+
+
+And make sure all components/hooks use this apiClient instead of repeating URLs.
+
+If there are direct fetch("https://...") calls, replace them with something like:
+
+import { API_BASE_URL } from "../config/api"; // correct path
+
+fetch(`${API_BASE_URL}/assessment/questions`, ...)
+
+
+Make sure the /api prefix is handled correctly.
+
+My FastAPI app mounts the router with prefix="/api".
+
+That means API_BASE_URL should end with /api,
+and then the frontend should call relative paths like /assessment/submit, /tech/categories, etc.
+
+Please verify we don’t accidentally end up with /api/api/....
+
+Do NOT change behavior or features, only how the base URL is chosen.
+
+Don’t rewrite major logic.
+
+Don’t remove pages or components.
+
+Just centralize and cleanly switch the base URL.
+
+Show me exactly which files you changed.
+
+At the end, list all modified/created files.
+
+For each one, briefly summarize what you changed (1–2 sentences).
+
+Important constraints
+
+Do not delete or radically rewrite existing files.
+
+Keep all existing navigation, flows, and pages working.
+
+Only add what’s necessary to:
+
+centralize the API base URL, and
+
+make it switch between localhost and the deployed URL.
+
+Make sure the default behavior in local dev is to call http://localhost:8000/api.
+
+After you’re done, tell me:
+
+Which URL the app will call when I open it at http://localhost:5173 (or whatever dev port) on my own machine.
+
+Which URL the app will call when deployed on Replit/Render.
