@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Plus, X, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, Sliders } from 'lucide-react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE_URL;
 
 const TechStackPage = () => {
   const navigate = useNavigate();

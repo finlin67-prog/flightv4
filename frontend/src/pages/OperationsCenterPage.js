@@ -5,10 +5,10 @@ import { Home, Plane, TrendingUp, Target, Zap, Users } from 'lucide-react';
 import axios from 'axios';
 import { MARKETING_CITIES, getCityById } from '../data/citiesData';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { API_BASE_URL } from '../config/api';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZmluZGxpbmc2NyIsImEiOiJjbWd6Z3d2eDcwNmR4eWtvbGkyZWd1YXV4In0.Erljxlgwjmx1L-Fj3tDKzg';
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE_URL;
 
 const OperationsCenterPage = () => {
   const { assessmentId } = useParams();

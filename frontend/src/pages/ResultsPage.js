@@ -3,9 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Home, History, TrendingUp, Award, Sparkles, Compass } from 'lucide-react';
 import axios from 'axios';
 import ScenarioSimulatorPanel from '../components/ScenarioSimulatorPanel';
+import { API_BASE_URL } from '../config/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE_URL;
 
 const ResultsPage = () => {
   const { assessmentId } = useParams();

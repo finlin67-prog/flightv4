@@ -3,9 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import ScenarioSimulatorPanel from '../components/ScenarioSimulatorPanel';
+import { API_BASE_URL } from '../config/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE_URL;
 
 const ScenarioSimulatorPage = () => {
   const navigate = useNavigate();

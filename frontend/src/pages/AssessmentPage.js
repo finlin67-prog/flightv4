@@ -6,9 +6,9 @@ import { useFlightStatus } from '../context/FlightStatusContext';
 import { calculateAverageScore, calculateLiveCombinedScore, getPlaneLevel, toFlightMiles } from '../utils/flightMetrics';
 import { getLiveJourneySuggestions, toPoints } from '../data/journeys';
 import LiveJourneySuggestions from '../components/LiveJourneySuggestions';
+import { API_BASE_URL } from '../config/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE_URL;
 
 const AssessmentPage = () => {
   const navigate = useNavigate();

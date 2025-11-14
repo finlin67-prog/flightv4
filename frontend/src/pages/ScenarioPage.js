@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Home, ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE_URL;
 
 const ScenarioPage = () => {
   const { assessmentId } = useParams();

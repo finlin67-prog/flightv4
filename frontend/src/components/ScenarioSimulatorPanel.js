@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Play, TrendingUp, TrendingDown } from 'lucide-react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE_URL;
 
 /**
  * Reusable Scenario Simulator Panel Component
