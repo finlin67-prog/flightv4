@@ -44,19 +44,25 @@ const AssessmentPage = () => {
     };
   }, [clearLiveStatus]);
 
-  // Update live status whenever responses change
+  // 🔄 Update live status whenever responses change
+  // Now also sends current aircraft + flight miles so the shared
+  // Flight Instruments panel can stay in sync.
   useEffect(() => {
     if (questions.length > 0) {
       const avgScore = calculateAverageScore(responses);
       const combinedScore = calculateLiveCombinedScore(responses, 0); // Tech score 0 until they add tech stack
       const answeredCount = Object.keys(responses).length;
+      const plane = getPlaneLevel(combinedScore);
+      const flightMiles = toFlightMiles(combinedScore);
 
       updateLiveStatus({
         currentScore: avgScore,
-        combinedScore: combinedScore,
-        answeredCount: answeredCount,
+        combinedScore,
+        answeredCount,
         totalQuestions: questions.length,
-        responses: responses
+        responses,
+        plane,
+        flightMiles,
       });
     }
   }, [responses, questions, updateLiveStatus]);
